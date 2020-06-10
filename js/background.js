@@ -105,8 +105,6 @@ var retroactivelyInitExistingTabs = function() {
 		}
 	});
 };
-
-
 //----------------------------------------------------------------------------------------------------------------------------------------------------
 //  Initialization
 //----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -131,3 +129,24 @@ var initializeBackgroundScript = function() {
 };
 
 initializeBackgroundScript();
+
+//////////////////////////////////
+chrome.extension.onMessage.addListener( function( message, sender, sendResponse ) {
+	// log( message );
+	var deals = message.deals
+	var new_deals = deals.length;
+	
+	if ( new_deals > 0 ) {
+		chrome.browserAction.setIcon( {
+			path : {
+				"32": "../images/icon_active32x.png"
+			},
+			tabId: sender.tab.id
+		} );
+		chrome.browserAction.setBadgeText( { text: new_deals.toString(), tabId: sender.tab.id } );
+		sendResponse( {
+			tabId: sender.tab.id,
+			deals: deals
+		} );
+	}
+});

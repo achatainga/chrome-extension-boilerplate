@@ -1,11 +1,11 @@
 {
 	"manifest_version": 2,
 
-	"name": "[NAME]",
-	"short_name": "[NAME]",
+	"name": "Couponifier.com",
+	"short_name": "Couponifier.com",
 	"version": "0.1",
-	"description": "[DESCRIPTION]",
-	"author": "[AUTHOR]",
+	"description": "Get coupons and deals for hundreds of thousands of stores online",
+	"author": "Couponifier.com",
 
 	"icons": {
 		"16": "images/icon.png",
@@ -19,7 +19,8 @@
 		"unlimitedStorage",
 		"cookies",
 		"http://*/",
-		"https://*/"
+		"https://*/",
+		"clipboardWrite"
 	],
 	"content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
 	"web_accessible_resources": [
@@ -39,7 +40,8 @@
 		"scripts": [
 			"js/background/helpers.js",
 			"js/background/file-reader.js",
-			"js/background.js"
+			"js/background.js",
+			"js/background_custom.js"
 		],
 		"persistent": true
 	},
@@ -49,7 +51,7 @@
 			"19": "images/icon.png",
 			"38": "images/icon.png"
 		},
-		"default_title": "[NAME]",
+		"default_title": "Couponifier.com",
 		"default_popup": "html/options.html"
 	},
 	"options_page": "html/options.html",
