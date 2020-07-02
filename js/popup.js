@@ -1,7 +1,44 @@
-chrome.storage.local.get( "data", function( data ) {
-    console.log( data );
-    $( "#deals" ).append( data.data.html );
+chrome.storage.local.get( "data", async function( data ) {
+    chrome.tabs.query( { currentWindow: true, active: true }, callback.bind( this, data.data ) );
+    $( "#user" ).append( data.data.user_html );
+    $( "#deals" ).append( data.data.deals_html );
 } );
+
+
+function logTabs( tabs, tabId ) {
+    // tabs[0].url requires the `tabs` permission
+    console.log( tabs[ 0 ].url );
+    console.log( tabId );
+    return tabs[ 0 ].id;
+}
+  
+function onError( error ) {
+    console.log( `Error: ${error}` );
+}
+
+function callback( data, tabs ) {
+    console.log( data );
+    console.log( tabs );
+    var currentTab = tabs[ 0 ]; // there will be only one in this array
+    console.log( currentTab ); // also has properties like currentTab.id
+    if ( currentTab.id === data.tabId ) {
+        return true;
+    } else {
+        $( "#user_actions" ).empty();
+        $( "#user_actions" ).append( `<div class="col">Refreshing page to get you deals</div>` );
+        setTimeout( function( host ) {
+            console.log( host );
+            chrome.extension.sendMessage( { action: "reload", host: host }, function( response ) {
+                
+                console.log( response );
+                window.close();
+            } );
+        }, 1000, extractHostname( currentTab.url ) );
+        $( "#deals" ).empty();
+        return false;
+    }
+    
+}
 
 function copyTextToClipboard( text ) {
     if ( typeof event != "undefined" ) {
@@ -61,7 +98,26 @@ $( document ).ready( function() {
         $( this ).html( "Copied" );
         setTimeout( function(){ element.html( deal_code ) }, 3000 );
     } )
-    $( ".deal_link" ).on( "click", function() {
+    $( ".link" ).on( "click", function() {
         window.open( $( this ).attr( "href" ) );
     } );
 } );
+
+function extractHostname( url ) {
+    var hostname;
+    //find & remove protocol (http, ftp, etc.) and get hostname
+
+    if ( url.indexOf( "//" ) > -1 ) {
+        hostname = url.split( '/' )[ 2 ];
+    }
+    else {
+        hostname = url.split( '/' )[ 0 ];
+    }
+
+    //find & remove port number
+    hostname = hostname.split( ':' )[ 0 ];
+    //find & remove "?"
+    hostname = hostname.split( '?' )[ 0 ];
+
+    return hostname;
+}
