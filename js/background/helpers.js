@@ -74,9 +74,9 @@ var sendHttpPostRequest = function( url, params, callback ) {
 };
 
 var nullOrundefined = variable => {
-	console.log( variable );
+	// console.log( variable );
 	if ( typeof variable == undefined || typeof variable == "undefined" || typeof variable == null || typeof variable == "null" || variable == undefined || variable == "undefined" || variable == null || variable == "null" ) {
-		console.log( "Null or undefined" );
+		// console.log( "Null or undefined" );
 		return true;
 	} else {
 		return false;
@@ -144,9 +144,9 @@ var copyTextToClipboard =  text => {
         // // text.innerHTML = "Code was successfully copied";
         // // $( text ).css( { display: "block" } );
         // // $( text ).fadeOut( 5000 );
-        console.log( successful );
+        // console.log( successful );
     } catch ( err ) {
-        console.log( err );
+        // console.log( err );
     }
   
     document.body.removeChild(textArea);
@@ -174,7 +174,7 @@ var print_deals = ( deals ) => {
 	if ( !nullOrundefined( deals[ 0 ].deal_id ) ) {
 		var html = `<h6 class="text-center h6">Click on any deal below</h6>`;
 		deals.map( function( data, index ) {
-			console.log( data.deal_id );
+			// console.log( data.deal_id );
 			html +=`
 			<div class="card">
 				<div class="card-body">
