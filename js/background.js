@@ -22,7 +22,7 @@ var getCodeForInjection = function( filename, replacements ) {
 
 // Inject page.js to the tab to initialize the extension
 var injectPageJsToTab = function( tab ) {
-	log( "Injecting loader script to tab " + tab.id );
+	// log( "Injecting loader script to tab " + tab.id );
 
 	// Load all scripts
 	var code = "";
@@ -59,8 +59,8 @@ var loadAllAssetsToCache = function( debug, callback ) {
 // Called every time a tab is updated
 var onTabUpdate = function( tabId, info, tab ) {
 	if (info.status == 'loading') {
-		log( "=========================" );
-		log( "Tab updated: " + getTabName(tab) + ", status: ", info );
+		// log( "=========================" );
+		// log( "Tab updated: " + getTabName(tab) + ", status: ", info );
 		initializeTab( tab, false );
 	}
 };
@@ -132,13 +132,13 @@ initializeBackgroundScript();
 
 //////////////////////////////////
 chrome.runtime.onMessage.addListener( function( message, sender, sendResponse ) {
-	console.log( message );
-	console.log( sender );
+	// console.log( message );
+	// console.log( sender );
 	var Action = {
 		"get_data_from_popup": get_data_from_popup( message, sender, sendResponse ),
 		"get_api_data2": get_data_from_content( message, sender, sendResponse ), 
 		"reload": function() {
-			console.log( "reloading" );
+			// console.log( "reloading" );
 			chrome.tabs.query( { active: true, currentWindow: true }, function( tabs ) {
 				chrome.tabs.update( tabs[ 0 ].id, { url: tabs[ 0 ].url } );
 			} );
@@ -164,20 +164,20 @@ var get_data_from_popup = async ( message, sender, sendResponse ) => {
 		user			= api_response[ 1 ];
 		deals_lenth 	= deals.length;
 		if ( host != "couponifier.com" ) {
-			console.log( host );
+			// console.log( host );
 			
-			console.log( deals );
+			// console.log( deals );
 			if ( deals_lenth > 0 ) {
-				console.log( deals_lenth );
+				// console.log( deals_lenth );
 				if ( nullOrundefined( deals[ 0 ].deal_id ) ) {
-					console.log( "has deals" );
+					// console.log( "has deals" );
 					user_html = ( nullOrundefined( deals[ 0 ].stor_id ) ? print_user( user, undefined, host ) : print_user( user, deals[ 0 ].stor_id, host ) );
 					data = {
 						user_html: user_html,
 						host: host
 					}
 				} else {
-					console.log( host );
+					// console.log( host );
 					deals_html = print_deals( deals );
 					user_html = nullOrundefined( deals[ 0 ].stor_id ) ? print_user( user, undefined, host ) : print_user( user, deals[ 0 ].stor_id, host );
 					data = {
@@ -201,7 +201,7 @@ var get_data_from_popup = async ( message, sender, sendResponse ) => {
 			}
 			
 		} else {
-			console.log( host );
+			// console.log( host );
 			data = new FormData();
 			data.append( "host", host );
 			if ( message.hasOwnProperty( "token" ) && !isEmpty( message.token ) ) {
@@ -209,7 +209,7 @@ var get_data_from_popup = async ( message, sender, sendResponse ) => {
 			}
 
 			user_response    =  await make_post( "https://couponifier.com/api.php", data );
-			console.log( api_response );
+			// console.log( api_response );
 			deals 			= api_response[ 0 ];
 			user			= api_response[ 1 ];
 			user_html = print_user( user, undefined, "couponifier.com" );
@@ -220,7 +220,7 @@ var get_data_from_popup = async ( message, sender, sendResponse ) => {
 		}
 		var data_to_send = {};
 		data_to_send[ message.tabId ] = data;
-		console.log( data_to_send );
+		// console.log( data_to_send );
 		chrome.storage.local.set( data_to_send );
 	} );
 	sendResponse( { data: true } );
@@ -230,8 +230,8 @@ var get_data_from_popup = async ( message, sender, sendResponse ) => {
 
 var get_data_from_content = async ( message, sender, sendResponse ) => {
 	chrome.tabs.query( { active: true, currentWindow: true }, async function( tabs ) {
-		console.log( tabs );
-		console.log( "tab active = " + sender.tab.active + " sender.tab.id = " + sender.tab.id + " tabs[ 0 ].id = " + tabs[ 0 ].id );
+		// console.log( tabs );
+		// console.log( "tab active = " + sender.tab.active + " sender.tab.id = " + sender.tab.id + " tabs[ 0 ].id = " + tabs[ 0 ].id );
 		if ( sender.tab.active && sender.tab.id == tabs[ 0 ].id ) {
 			var data, deals, user, api_response, deals_html, user_html, deals_lenth, host;
 			host = message.host;
@@ -246,13 +246,13 @@ var get_data_from_content = async ( message, sender, sendResponse ) => {
 			user			= api_response[ 1 ];
 			deals_lenth 	= deals.length;
 			if ( host != "couponifier.com" ) {
-				console.log( host );
+				// console.log( host );
 				
-				console.log( deals );
+				// console.log( deals );
 				if ( deals_lenth > 0 ) {
-					console.log( deals_lenth );
+					// console.log( deals_lenth );
 					if ( nullOrundefined( deals[ 0 ].deal_id ) ) {
-						console.log( "has deals" );
+						// console.log( "has deals" );
 						user_html = ( nullOrundefined( deals[ 0 ].stor_id ) ? print_user( user, undefined, host ) : print_user( user, deals[ 0 ].stor_id, host ) );
 						data = {
 							user_html: user_html,
@@ -260,7 +260,7 @@ var get_data_from_content = async ( message, sender, sendResponse ) => {
 							host: host
 						}
 					} else {
-						console.log( host );
+						// console.log( host );
 						deals_html = print_deals( deals );
 						user_html = nullOrundefined( deals[ 0 ].stor_id ) ? print_user( user, undefined, host ) : print_user( user, deals[ 0 ].stor_id, host );
 						data = {
@@ -288,7 +288,7 @@ var get_data_from_content = async ( message, sender, sendResponse ) => {
 				}
 				
 			} else {
-				console.log( host );
+				// console.log( host );
 				data = new FormData();
 				data.append( "host", host );
 				if ( message.hasOwnProperty( "token" ) && !isEmpty( message.token ) ) {
@@ -296,7 +296,7 @@ var get_data_from_content = async ( message, sender, sendResponse ) => {
 				}
 
 				user_response    =  await make_post( "https://couponifier.com/api.php", data );
-				console.log( api_response );
+				// console.log( api_response );
 				deals 			= api_response[ 0 ];
 				user			= api_response[ 1 ];
 				user_html = print_user( user, undefined, "couponifier.com" );
@@ -308,7 +308,7 @@ var get_data_from_content = async ( message, sender, sendResponse ) => {
 			}
 			var data_to_send = {};
 			data_to_send[ message.tabId ] = data;
-			console.log( data_to_send );
+			// console.log( data_to_send );
 			chrome.storage.local.set( data_to_send );
 		}
 	} );
