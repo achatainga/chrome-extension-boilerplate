@@ -1,19 +1,9 @@
-$( document ).ready( function() {
-    $( ".deal_code" ).on( "click", function() {
-        event.preventDefault();
-        console.log( "clicked" );
-        copyTextToClipboard( $( this ).attr( "deal_code" ) );
-        $( this ).html( "Copied" );
-        setTimeout( function(){ element.html( deal_code ) }, 3000 );
-    } );
-    
-     $( ".login" ).on( "click", function() {
-        event.preventDefault();
-        console.log( "clicked" );
-        window.open( $( "#login" ).attr( "href" ) );         
-     } );
-
-     $( ".deal_link" ).on( "click", function() {
-        window.open( $( this ).attr( "href" ) );
-    } );
-} );
+var nullOrundefined = variable => {
+	console.log( variable );
+	if ( typeof variable == undefined || typeof variable == "undefined" || typeof variable == null || typeof variable == "null" || variable == undefined || variable == "undefined" || variable == null || variable == "null" ) {
+		console.log( "Null or undefined" );
+		return true;
+	} else {
+		return false;
+	}
+}
