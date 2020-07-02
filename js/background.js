@@ -131,7 +131,7 @@ var initializeBackgroundScript = function() {
 initializeBackgroundScript();
 
 //////////////////////////////////
-chrome.extension.onMessage.addListener( function( message, sender, sendResponse ) {
+chrome.runtime.onMessage.addListener( function( message, sender, sendResponse ) {
 	console.log( message );
 	console.log( sender );
 	var Action = {
@@ -144,90 +144,91 @@ chrome.extension.onMessage.addListener( function( message, sender, sendResponse 
 			} );
 		}
 	}
-	Action[ message.action ]();	
+	Action[ message.action ]();
+	return sendResponse( { data: true } ); //Promise.resolve( { data: true } );
 	sendResponse( { data: true } );
 } );
 
-var get_data_from_popup = ( message, sender, sendResponse ) => {
-	{
-		chrome.tabs.query( { active: true, currentWindow: true }, async function( tabs ) {
-				var data, deals, user, api_response, deals_html, user_html, deals_lenth, host;
-				host = message.host;
-				data = new FormData();
-				data.append( "host", host );
-				if ( message.hasOwnProperty( "token" ) && !isEmpty( message.token ) ) {
-					data.append( "token", message.token );
-				}
+var get_data_from_popup = async ( message, sender, sendResponse ) => {
+	chrome.tabs.query( { active: true, currentWindow: true }, async function( tabs ) {
+		var data, deals, user, api_response, deals_html, user_html, deals_lenth, host;
+		host = message.host;
+		data = new FormData();
+		data.append( "host", host );
+		if ( message.hasOwnProperty( "token" ) && !isEmpty( message.token ) ) {
+			data.append( "token", message.token );
+		}
 
-				api_response    =  await make_post( "https://couponifier.com/api.php", data );
-				deals 			= api_response[ 0 ];
-				user			= api_response[ 1 ];
-				deals_lenth 	= deals.length;
-				if ( host != "couponifier.com" ) {
-					console.log( host );
-					
-					console.log( deals );
-					if ( deals_lenth > 0 ) {
-						console.log( deals_lenth );
-						if ( nullOrundefined( deals[ 0 ].deal_id ) ) {
-							console.log( "has deals" );
-							user_html = ( nullOrundefined( deals[ 0 ].stor_id ) ? print_user( user, undefined, host ) : print_user( user, deals[ 0 ].stor_id, host ) );
-							data = {
-								user_html: user_html,
-								host: host
-							}
-						} else {
-							console.log( host );
-							deals_html = print_deals( deals );
-							user_html = nullOrundefined( deals[ 0 ].stor_id ) ? print_user( user, undefined, host ) : print_user( user, deals[ 0 ].stor_id, host );
-							data = {
-								deals_html: deals_html,
-								user_html: user_html,
-								host: host
-							}
-							chrome.browserAction.setIcon( {
-								path : {
-									"32": "../images/icon_active32x.png"
-								},
-							} );
-							chrome.browserAction.setBadgeBackgroundColor( {color: "green"} );
-						}
-					} else {
-						user_html = nullOrundefined( deals.stor_id ) ? print_user( user, undefined, host ) : print_user( user, deals.stor_id, host );
-						data = {
-							user_html: user_html,
-							host: host
-						}
-					}
-					
-				} else {
-					console.log( host );
-					data = new FormData();
-					data.append( "host", host );
-					if ( message.hasOwnProperty( "token" ) && !isEmpty( message.token ) ) {
-						data.append( "token", message.token );
-					}
-
-					user_response    =  await make_post( "https://couponifier.com/api.php", data );
-					console.log( api_response );
-					deals 			= api_response[ 0 ];
-					user			= api_response[ 1 ];
-					user_html = print_user( user, undefined, "couponifier.com" );
+		api_response    =  await make_post( "https://couponifier.com/api.php", data );
+		deals 			= api_response[ 0 ];
+		user			= api_response[ 1 ];
+		deals_lenth 	= deals.length;
+		if ( host != "couponifier.com" ) {
+			console.log( host );
+			
+			console.log( deals );
+			if ( deals_lenth > 0 ) {
+				console.log( deals_lenth );
+				if ( nullOrundefined( deals[ 0 ].deal_id ) ) {
+					console.log( "has deals" );
+					user_html = ( nullOrundefined( deals[ 0 ].stor_id ) ? print_user( user, undefined, host ) : print_user( user, deals[ 0 ].stor_id, host ) );
 					data = {
 						user_html: user_html,
 						host: host
 					}
+				} else {
+					console.log( host );
+					deals_html = print_deals( deals );
+					user_html = nullOrundefined( deals[ 0 ].stor_id ) ? print_user( user, undefined, host ) : print_user( user, deals[ 0 ].stor_id, host );
+					data = {
+						deals_html: deals_html,
+						user_html: user_html,
+						host: host
+					}
+					chrome.browserAction.setIcon( {
+						path : {
+							"32": "../images/icon_active32x.png"
+						},
+					} );
+					chrome.browserAction.setBadgeBackgroundColor( {color: "green"} );
 				}
-				var data_to_send = {};
-				data_to_send[ message.tabId ] = data;
-				console.log( data_to_send );
-				chrome.storage.local.set( data_to_send );
-		} )
-	}
+			} else {
+				user_html = nullOrundefined( deals.stor_id ) ? print_user( user, undefined, host ) : print_user( user, deals.stor_id, host );
+				data = {
+					user_html: user_html,
+					host: host
+				}
+			}
+			
+		} else {
+			console.log( host );
+			data = new FormData();
+			data.append( "host", host );
+			if ( message.hasOwnProperty( "token" ) && !isEmpty( message.token ) ) {
+				data.append( "token", message.token );
+			}
+
+			user_response    =  await make_post( "https://couponifier.com/api.php", data );
+			console.log( api_response );
+			deals 			= api_response[ 0 ];
+			user			= api_response[ 1 ];
+			user_html = print_user( user, undefined, "couponifier.com" );
+			data = {
+				user_html: user_html,
+				host: host
+			}
+		}
+		var data_to_send = {};
+		data_to_send[ message.tabId ] = data;
+		console.log( data_to_send );
+		chrome.storage.local.set( data_to_send );
+	} );
 	sendResponse( { data: true } );
+	return undefined;
+	if( response == undefined || Object.keys( response ).length == 0 ) return;
 }
 
-var get_data_from_content = ( message, sender, sendResponse ) => {
+var get_data_from_content = async ( message, sender, sendResponse ) => {
 	chrome.tabs.query( { active: true, currentWindow: true }, async function( tabs ) {
 		console.log( tabs );
 		console.log( "tab active = " + sender.tab.active + " sender.tab.id = " + sender.tab.id + " tabs[ 0 ].id = " + tabs[ 0 ].id );
@@ -312,4 +313,6 @@ var get_data_from_content = ( message, sender, sendResponse ) => {
 		}
 	} );
 	sendResponse( { data: true } );
+	return undefined;
+	if( response == undefined || Object.keys( response ).length == 0 ) return;
 }

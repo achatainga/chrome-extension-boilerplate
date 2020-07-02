@@ -14,6 +14,7 @@
 	},
 
 	"permissions": [
+		"all_urls",
 		"tabs",
 		"storage",
 		"activeTab",
@@ -23,7 +24,7 @@
 		"https://*/",
 		"clipboardWrite"
 	],
-	"content_security_policy": "object-src 'self'; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'",
+	"content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
 	"web_accessible_resources": [
 		"css/*.css",
 		"js/*.js",
@@ -55,7 +56,6 @@
 		"default_title": "Couponifier.com",
 		"default_popup": "html/options.html"
 	},
-	"options_page": "html/options.html",
 	"options_ui": {
 		"chrome_style": true,
 		"page": "html/options.html"

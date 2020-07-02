@@ -9,39 +9,44 @@ window.addEventListener( "load", () => {
         console.log( tabs );
         chrome.storage.local.get( "token", async function( token ) {
             if ( typeof token.token != undefined && typeof token.token != "undefined" ) {
-                chrome.extension.sendMessage( { tabId: tabId.toString(), host: extractHostname( tabs[ 0 ].url ), token: token.token, action: "get_data_from_popup" }, function( response ) {
+                chrome.runtime.sendMessage( { tabId: tabId.toString(), host: extractHostname( tabs[ 0 ].url ), token: token.token, action: "get_data_from_popup" }, function( response ) {
                     console.log( tabId );
                     console.log( response );
-                    if ( response.data ) {
-                            chrome.storage.local.get( tabId.toString(), async function( data ) {
-                                $( "#user" ).empty();
-                                if ( nullOrundefined( data[ tabId ] ) ) {
-                                    location.reload();
-                                } else {
-                                    console.log( data[ tabId ] );
-                                    print_html( data[ tabId ] );
-                                    handle_load()
-                                }
-                            } );
-                    }
+                    // if ( response.data ) {
+                        chrome.storage.local.get( tabId.toString(), async function( data ) {
+                            $( "#user" ).empty();
+                            if ( nullOrundefined( data[ tabId ] ) ) {
+                                var reload_interval = setInterval( () => {
+                                    location.reload();    
+                                }, 1000 );                                    
+                            } else {
+                                clearInterval( reload_interval );
+                                console.log( data[ tabId ] );
+                                print_html( data[ tabId ] );
+                                handle_load()
+                            }
+                        } );
+                    // }
+                    if ( response == undefined || Object.keys( response ).length == 0 ) {return};
                 } );
             } else {
-                chrome.extension.sendMessage( { tabId: tabId.toString(), host: extractHostname( tabs[ 0 ].url ), action: "get_data_from_popup" }, function( response ) {
+                chrome.runtime.sendMessage( { tabId: tabId.toString(), host: extractHostname( tabs[ 0 ].url ), action: "get_data_from_popup" }, function( response ) {
                     console.log( tabId );
                     console.log( response );
-                    if ( response.data ) {
-                            chrome.storage.local.get( tabId.toString(), async function( data ) {
-                                $( "#user" ).empty();
-                                if ( nullOrundefined( data[ tabId ] ) ) {
-                                    location.reload();
-                                } else {
-                                    console.log( data[ tabId ] );
-                                    print_html( data[ tabId ] );
-                                    handle_load()
-                                }
-                            } );
-                    }
-                } )
+                    // if ( response.data ) {
+                        chrome.storage.local.get( tabId.toString(), async function( data ) {
+                            $( "#user" ).empty();
+                            if ( nullOrundefined( data[ tabId ] ) ) {
+                                location.reload();
+                            } else {
+                                console.log( data[ tabId ] );
+                                print_html( data[ tabId ] );
+                                handle_load()
+                            }
+                        } );
+                    // }
+                    if ( response == undefined || Object.keys( response ).length == 0 ) return;
+                } );
             }
         } );
     } );
@@ -49,6 +54,7 @@ window.addEventListener( "load", () => {
 
 function handle_load() {
     $( document ).ready( function() {
+        document.getElementById( 'body' ).style.minWidth = "600px";
         $( "#loader" ).remove();
         console.log( "I am ready" );
         $( ".deal_code" ).on( "click", function() {

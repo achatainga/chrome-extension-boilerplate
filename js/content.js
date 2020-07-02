@@ -74,13 +74,15 @@ async function get_deals() {
 	var data = new FormData();
 	chrome.storage.local.get( "token", async function( token ) {
 		if ( typeof token.token != undefined && typeof token.token != "undefined" ) {
-			chrome.extension.sendMessage( { host: host, token: token.token, action: "get_api_data2" }, function( response ) {
+			chrome.runtime.sendMessage( { host: host, token: token.token, action: "get_api_data2" }, function( response ) {
 				console.log( response );
+				if( response == undefined || Object.keys( response ).length == 0 ) return;
 			} );
 		} else {
-			chrome.extension.sendMessage( { host: host, action: "get_api_data2" }, function( response ) {
+			chrome.runtime.sendMessage( { host: host, action: "get_api_data2" }, function( response ) {
 				console.log( response );
-			} )
+				if( response == undefined || Object.keys( response ).length == 0 ) return;
+			} );
 		}
 	} );
 }
