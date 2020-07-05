@@ -5,49 +5,18 @@ link.setAttribute( 'src', path );
 document.getElementsByTagName( 'head' )[ 0 ].appendChild( link );
 window.addEventListener( "load", () => {
     chrome.tabs.query( { currentWindow: true, active: true }, function( tabs ) {
-        var tabId = tabs[ 0 ].id;
+        var currentTab = tabs[ 0 ];
         // console.log( tabs );
         chrome.storage.local.get( "token", async function( token ) {
-            if ( typeof token.token != undefined && typeof token.token != "undefined" ) {
-                chrome.runtime.sendMessage( { tabId: tabId.toString(), host: extractHostname( tabs[ 0 ].url ), token: token.token, action: "get_data_from_popup" }, function( response ) {
-                    // console.log( tabId );
-                    // console.log( response );
-                    // if ( response.data ) {
-                        chrome.storage.local.get( tabId.toString(), async function( data ) {
-                            $( "#user" ).empty();
-                            if ( nullOrundefined( data[ tabId ] ) ) {
-                                var reload_interval = setInterval( () => {
-                                    location.reload();    
-                                }, 1000 );                                    
-                            } else {
-                                clearInterval( reload_interval );
-                                // console.log( data[ tabId ] );
-                                print_html( data[ tabId ] );
-                                handle_load()
-                            }
-                        } );
-                    // }
-                    if ( response == undefined || Object.keys( response ).length == 0 ) {return};
-                } );
-            } else {
-                chrome.runtime.sendMessage( { tabId: tabId.toString(), host: extractHostname( tabs[ 0 ].url ), action: "get_data_from_popup" }, function( response ) {
-                    // console.log( tabId );
-                    // console.log( response );
-                    // if ( response.data ) {
-                        chrome.storage.local.get( tabId.toString(), async function( data ) {
-                            $( "#user" ).empty();
-                            if ( nullOrundefined( data[ tabId ] ) ) {
-                                location.reload();
-                            } else {
-                                // console.log( data[ tabId ] );
-                                print_html( data[ tabId ] );
-                                handle_load()
-                            }
-                        } );
-                    // }
-                    if ( response == undefined || Object.keys( response ).length == 0 ) return;
-                } );
-            }
+            var token = ( !nullOrundefined( token.token ) && !isEmpty( token.token ) ) ? token.token : {};
+            chrome.runtime.sendMessage( { host: extractHostname( currentTab.url ), token: token, action: "get_data_from_api" }, async function( response ) {
+                if ( response == undefined || Object.keys( response ).length == 0 ) { return };
+                console.log( response );
+                if ( !nullOrundefined( response ) && !isEmpty( response ) && !nullOrundefined( response.data ) && !isEmpty( response.data ) ) {
+                    print_html( response.data.popup );
+                    handle_load();
+                }
+            } );
         } );
     } );
 } );

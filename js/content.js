@@ -6,23 +6,6 @@ if (typeof(EXT_NAME_CONTENT_SCRIPT_LOADED) == 'undefined') {
 	//---------------------------------------------------------------------------------------------------------------------
 	ExtName.initialize = function() {
 		console.log( "INITIALIZE" );
-		var host = window.location.host;
-		if ( host == "couponifier.com" ) {
-			// console.log( window.location.href );
-			if ( window.location.href.includes( "submitdeal.php?step=store&find=" ) ) {
-				// console.log( "yes" );
-				const urlParams = new URLSearchParams( window.location.search );
-				const myParam = urlParams.get( 'find' );
-				$( document ).ready( function() {
-					$( "#stor_find" ).val( atob( myParam ) );
-				} );
-			}
-			get_deals();
-		} else {
-			get_deals();
-		}
-			
-
 		// Load CSS
 		var path = chrome.extension.getURL('css/content.css');
 		var link = document.createElement( 'link' );
@@ -32,19 +15,31 @@ if (typeof(EXT_NAME_CONTENT_SCRIPT_LOADED) == 'undefined') {
 		document.getElementsByTagName( 'head' )[ 0 ].appendChild( link );
 
 		// Load JS
-		var path = chrome.extension.getURL( 'js/background/helpers.js' );
-		var link = document.createElement( 'script' );
-		link.setAttribute( 'src', path );
-		document.getElementsByTagName( 'head' )[ 0 ].appendChild( link );
-		// $( document ).ready( function() { log( path ); } );
-		
-		
+		// var path = chrome.extension.getURL( 'js/background/helpers.js' );
+		// var link = document.createElement( 'script' );
+		// link.setAttribute( 'src', path );
+		// document.getElementsByTagName( 'head' )[ 0 ].appendChild( link );
 		// End of initialize
 	}
 
 	//---------------------------------------------------------------------------------------------------------------------
 	// Start the extension content script
 	ExtName.initialize();
+	var host = window.location.host;
+	if ( host == "couponifier.com" ) {
+		// console.log( window.location.href );
+		if ( window.location.href.includes( "submitdeal.php?step=store&find=" ) ) {
+			// console.log( "yes" );
+			const urlParams = new URLSearchParams( window.location.search );
+			const myParam = urlParams.get( 'find' );
+			$( document ).ready( function() {
+				$( "#stor_find" ).val( atob( myParam ) );
+			} );
+		}
+		get_deals();
+	} else {
+		get_deals();
+	}
 }
 
 window.addEventListener( "message", function( event ) {
@@ -77,28 +72,20 @@ window.addEventListener( "message", function( event ) {
 async function get_deals() {
 	var host = window.location.host;
 	console.log( host );
-	chrome.storage.local.get( "token", async function( token ) {
-		if ( typeof token.token != undefined && typeof token.token != "undefined" && !isEmpty( token.token ) ) {
-			chrome.runtime.sendMessage( { host: host, token: token.token, action: "get_data_from_content" }, function( response ) {
-				console.log( response );
-				if( response == undefined || Object.keys( response ).length == 0 ) return;
-				var Switch = {
-					1: ( () => {
-						return
-					} ),
-					2: ( () => { return } ),
-					3: ( () => { get_deals(); } ),
-					"default": ( () => {
-						return
-					} )
-				}
-				( Switch[ response.data ] || Switch[ 'default' ] )();
-			} );
-		} else {
-			chrome.runtime.sendMessage( { host: host, action: "get_data_from_content" }, function( response ) {
-				console.log( response );
-				if( response == undefined || Object.keys( response ).length == 0 ) return;
-			} );
-		}
+		chrome.storage.local.get( "token", async function( token ) {
+		var token = ( nullOrundefined( token.token ) && !isEmpty( token.token ) ) ? token.token : {};
+		chrome.runtime.sendMessage( { host: host, token: token, action: "get_data_from_api" }, function( response ) {
+			console.log( response );
+			if( response == undefined || Object.keys( response ).length == 0 ) return;
+			var Switch = {
+				1: ( () => {
+					return
+				} ),
+				2: ( () => { return } ),
+				3: ( () => { get_deals(); } ),
+				"default": ( () => { return } )
+			}
+			( Switch[ response.data ] || Switch[ 'default' ] )();
+		} );
 	} );
 }
