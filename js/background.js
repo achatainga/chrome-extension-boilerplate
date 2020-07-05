@@ -132,24 +132,26 @@ initializeBackgroundScript();
 
 //////////////////////////////////
 chrome.runtime.onMessage.addListener( function( message, sender, sendResponse ) {
-	// console.log( message );
-	// console.log( sender );
+	console.log( message );
+	console.log( sender );
 	var Action = {
-		"get_data_from_popup": get_data_from_popup( message, sender, sendResponse ),
-		"get_api_data2": get_data_from_content( message, sender, sendResponse ), 
+		"get_data_from_popup": get_data_from_popup,
+		"get_data_from_content": get_data_from_content, 
 		"reload": function() {
-			// console.log( "reloading" );
+			console.log( "reloading" );
 			chrome.tabs.query( { active: true, currentWindow: true }, function( tabs ) {
 				chrome.tabs.update( tabs[ 0 ].id, { url: tabs[ 0 ].url } );
 			} );
 		}
 	}
-	Action[ message.action ]();
-	return sendResponse( { data: true } ); //Promise.resolve( { data: true } );
+	console.log( message.action );
+	Action[ message.action ]( message, sender, sendResponse );
 	sendResponse( { data: true } );
+	return
 } );
 
 var get_data_from_popup = async ( message, sender, sendResponse ) => {
+	console.log( "GET DATA FROM POPUP" );
 	chrome.tabs.query( { active: true, currentWindow: true }, async function( tabs ) {
 		var data, deals, user, api_response, deals_html, user_html, deals_lenth, host;
 		host = message.host;
@@ -164,20 +166,20 @@ var get_data_from_popup = async ( message, sender, sendResponse ) => {
 		user			= api_response[ 1 ];
 		deals_lenth 	= deals.length;
 		if ( host != "couponifier.com" ) {
-			// console.log( host );
+			console.log( host );
 			
-			// console.log( deals );
+			console.log( deals );
 			if ( deals_lenth > 0 ) {
-				// console.log( deals_lenth );
+				console.log( deals_lenth );
 				if ( nullOrundefined( deals[ 0 ].deal_id ) ) {
-					// console.log( "has deals" );
+					console.log( "has deals" );
 					user_html = ( nullOrundefined( deals[ 0 ].stor_id ) ? print_user( user, undefined, host ) : print_user( user, deals[ 0 ].stor_id, host ) );
 					data = {
 						user_html: user_html,
 						host: host
 					}
 				} else {
-					// console.log( host );
+					console.log( host );
 					deals_html = print_deals( deals );
 					user_html = nullOrundefined( deals[ 0 ].stor_id ) ? print_user( user, undefined, host ) : print_user( user, deals[ 0 ].stor_id, host );
 					data = {
@@ -201,7 +203,7 @@ var get_data_from_popup = async ( message, sender, sendResponse ) => {
 			}
 			
 		} else {
-			// console.log( host );
+			console.log( host );
 			data = new FormData();
 			data.append( "host", host );
 			if ( message.hasOwnProperty( "token" ) && !isEmpty( message.token ) ) {
@@ -209,7 +211,7 @@ var get_data_from_popup = async ( message, sender, sendResponse ) => {
 			}
 
 			user_response    =  await make_post( "https://couponifier.com/api.php", data );
-			// console.log( api_response );
+			console.log( api_response );
 			deals 			= api_response[ 0 ];
 			user			= api_response[ 1 ];
 			user_html = print_user( user, undefined, "couponifier.com" );
@@ -220,7 +222,7 @@ var get_data_from_popup = async ( message, sender, sendResponse ) => {
 		}
 		var data_to_send = {};
 		data_to_send[ message.tabId ] = data;
-		// console.log( data_to_send );
+		console.log( data_to_send );
 		chrome.storage.local.set( data_to_send );
 	} );
 	sendResponse( { data: true } );
@@ -229,9 +231,10 @@ var get_data_from_popup = async ( message, sender, sendResponse ) => {
 }
 
 var get_data_from_content = async ( message, sender, sendResponse ) => {
+	console.log( "GET DATA FROM CONTENT" );
 	chrome.tabs.query( { active: true, currentWindow: true }, async function( tabs ) {
-		// console.log( tabs );
-		// console.log( "tab active = " + sender.tab.active + " sender.tab.id = " + sender.tab.id + " tabs[ 0 ].id = " + tabs[ 0 ].id );
+		console.log( tabs );
+		console.log( "tab active = " + sender.tab.active + " sender.tab.id = " + sender.tab.id + " tabs[ 0 ].id = " + tabs[ 0 ].id );
 		if ( sender.tab.active && sender.tab.id == tabs[ 0 ].id ) {
 			var data, deals, user, api_response, deals_html, user_html, deals_lenth, host;
 			host = message.host;
@@ -242,25 +245,45 @@ var get_data_from_content = async ( message, sender, sendResponse ) => {
 			}
 
 			api_response    =  await make_post( "https://couponifier.com/api.php", data );
+			console.log( api_response );
 			deals 			= api_response[ 0 ];
 			user			= api_response[ 1 ];
 			deals_lenth 	= deals.length;
 			if ( host != "couponifier.com" ) {
-				// console.log( host );
+				console.log( host );
 				
-				// console.log( deals );
+				console.log( deals );
 				if ( deals_lenth > 0 ) {
-					// console.log( deals_lenth );
+					console.log( deals_lenth );
 					if ( nullOrundefined( deals[ 0 ].deal_id ) ) {
-						// console.log( "has deals" );
+						console.log( "has deals" );
 						user_html = ( nullOrundefined( deals[ 0 ].stor_id ) ? print_user( user, undefined, host ) : print_user( user, deals[ 0 ].stor_id, host ) );
 						data = {
 							user_html: user_html,
 							tabId: sender.tab.id,
 							host: host
 						}
+						if ( detectBrowser( "chrome" ) ) {
+							chrome.browserAction.setIcon( {
+								path : {
+									"32": "../images/icon_active32x.png"
+								},
+								tabId: sender.tab.id
+							} );
+							chrome.browserAction.setBadgeText( { text: deals_lenth.toString(), tabId: sender.tab.id } );
+							chrome.browserAction.setBadgeBackgroundColor( {color: "green"} );
+						} else if ( "firefox" ) {
+							browser.browserAction.setIcon( {
+								path : {
+									"32": "../images/icon_active32x.png"
+								},
+								tabId: sender.tab.id
+							} );
+							browser.browserAction.setBadgeText( { text: deals_lenth.toString(), tabId: sender.tab.id } );
+							browser.browserAction.setBadgeBackgroundColor( {color: "green"} );
+						}
 					} else {
-						// console.log( host );
+						console.log( host );
 						deals_html = print_deals( deals );
 						user_html = nullOrundefined( deals[ 0 ].stor_id ) ? print_user( user, undefined, host ) : print_user( user, deals[ 0 ].stor_id, host );
 						data = {
@@ -269,14 +292,6 @@ var get_data_from_content = async ( message, sender, sendResponse ) => {
 							tabId: sender.tab.id,
 							host: host
 						}
-						chrome.browserAction.setIcon( {
-							path : {
-								"32": "../images/icon_active32x.png"
-							},
-							tabId: sender.tab.id
-						} );
-						chrome.browserAction.setBadgeText( { text: deals_lenth.toString(), tabId: sender.tab.id } );
-						chrome.browserAction.setBadgeBackgroundColor( {color: "green"} );
 					}
 				} else {
 					user_html = nullOrundefined( deals.stor_id ) ? print_user( user, undefined, host ) : print_user( user, deals.stor_id, host );
@@ -288,7 +303,7 @@ var get_data_from_content = async ( message, sender, sendResponse ) => {
 				}
 				
 			} else {
-				// console.log( host );
+				console.log( host );
 				data = new FormData();
 				data.append( "host", host );
 				if ( message.hasOwnProperty( "token" ) && !isEmpty( message.token ) ) {
@@ -296,7 +311,7 @@ var get_data_from_content = async ( message, sender, sendResponse ) => {
 				}
 
 				user_response    =  await make_post( "https://couponifier.com/api.php", data );
-				// console.log( api_response );
+				console.log( api_response );
 				deals 			= api_response[ 0 ];
 				user			= api_response[ 1 ];
 				user_html = print_user( user, undefined, "couponifier.com" );
@@ -307,8 +322,8 @@ var get_data_from_content = async ( message, sender, sendResponse ) => {
 				}
 			}
 			var data_to_send = {};
-			data_to_send[ message.tabId ] = data;
-			// console.log( data_to_send );
+			data_to_send[ sender.tab.id ] = data;
+			console.log( data_to_send );
 			chrome.storage.local.set( data_to_send );
 		}
 	} );
