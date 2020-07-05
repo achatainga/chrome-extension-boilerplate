@@ -312,3 +312,16 @@ var detectBrowser = ( type ) => {
 	// output += 'isBlink: ' + isBlink + '<br>';
 	// document.body.innerHTML = output;
 }
+
+var print_undermaintenance = () => {
+	var html = ``;
+	html += `
+		<div class="container-fluid text-center d-flex justify-content-center p-2 flex-column">
+			<div class="row no-gutters d-flex justify-content-center flex-column">
+				<img class="img-fluid align-self-center" src="https://couponifier.com/images/others/logo.png" alt="Couponifier logo" style="max-width: 40%;max-height:40%">
+				<p class="col h6 text-center pt-2">` + user[ 0 ].fullname + `</p>
+			</div>
+			<div>Under Short Maintenance. Check again later</div>
+		</div>`;
+	return html
+}

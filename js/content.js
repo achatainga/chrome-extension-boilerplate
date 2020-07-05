@@ -78,23 +78,25 @@ async function get_deals() {
 	var host = window.location.host;
 	console.log( host );
 	chrome.storage.local.get( "token", async function( token ) {
-		if ( typeof token.token != undefined && typeof token.token != "undefined" ) {
+		if ( typeof token.token != undefined && typeof token.token != "undefined" && !isEmpty( token.token ) ) {
 			chrome.runtime.sendMessage( { host: host, token: token.token, action: "get_data_from_content" }, function( response ) {
-				// console.log( response );
+				console.log( response );
+				if( response == undefined || Object.keys( response ).length == 0 ) return;
 				var Switch = {
-					2: ( () => {  } ),
+					1: ( () => {
+						return
+					} ),
+					2: ( () => { return } ),
 					3: ( () => { get_deals(); } ),
-					"undefined": ( () => {
-
+					"default": ( () => {
+						return
 					} )
 				}
-				Switch[ response.data ];
-				
-				if( response == undefined || Object.keys( response ).length == 0 ) return;
+				( Switch[ response.data ] || Switch[ 'default' ] )();
 			} );
 		} else {
 			chrome.runtime.sendMessage( { host: host, action: "get_data_from_content" }, function( response ) {
-				// console.log( response );
+				console.log( response );
 				if( response == undefined || Object.keys( response ).length == 0 ) return;
 			} );
 		}

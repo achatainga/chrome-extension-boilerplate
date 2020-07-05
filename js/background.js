@@ -248,6 +248,16 @@ var get_data_from_content = async ( message, sender, sendResponse ) => {
 			if ( nullOrundefined( api_response[ 0 ] ) ) {
 				var Switch = {
 					2: ( () => {
+						user_html = print_undermaintenance();
+						data = {
+							user_html: user_html,
+							tabId: sender.tab.id,
+							host: host
+						}
+						var data_to_send = {};
+						data_to_send[ sender.tab.id ] = data;
+						console.log( data_to_send );
+						chrome.storage.local.set( data_to_send );
 						chrome.storage.local.set( { token: {} } );
 					} ),
 					3: ( () => {
@@ -255,7 +265,7 @@ var get_data_from_content = async ( message, sender, sendResponse ) => {
 					} )
 				}
 				Switch[ api_response ]();
-				sendResponse( { data: 3 } );
+				sendResponse( { data: api_response } );
 				return;
 			}
 			console.log( api_response );
@@ -276,25 +286,6 @@ var get_data_from_content = async ( message, sender, sendResponse ) => {
 							tabId: sender.tab.id,
 							host: host
 						}
-						if ( detectBrowser( "chrome" ) ) {
-							chrome.browserAction.setIcon( {
-								path : {
-									"32": "../images/icon_active32x.png"
-								},
-								tabId: sender.tab.id
-							} );
-							chrome.browserAction.setBadgeText( { text: deals_lenth.toString(), tabId: sender.tab.id } );
-							chrome.browserAction.setBadgeBackgroundColor( {color: "green"} );
-						} else if ( "firefox" ) {
-							browser.browserAction.setIcon( {
-								path : {
-									"32": "../images/icon_active32x.png"
-								},
-								tabId: sender.tab.id
-							} );
-							browser.browserAction.setBadgeText( { text: deals_lenth.toString(), tabId: sender.tab.id } );
-							browser.browserAction.setBadgeBackgroundColor( {color: "green"} );
-						}
 					} else {
 						console.log( host );
 						deals_html = print_deals( deals );
@@ -306,6 +297,25 @@ var get_data_from_content = async ( message, sender, sendResponse ) => {
 							host: host
 						}
 					}
+					if ( detectBrowser( "chrome" ) && !nullOrundefined( deals[ 0 ].deal_id ) ) {
+						chrome.browserAction.setIcon( {
+							path : {
+								"32": "../images/icon_active32x.png"
+							},
+							tabId: sender.tab.id
+						} );
+						chrome.browserAction.setBadgeText( { text: deals_lenth.toString(), tabId: sender.tab.id } );
+						chrome.browserAction.setBadgeBackgroundColor( {color: "green"} );
+					} else if ( detectBrowser( "chrome" ) && !nullOrundefined( deals[ 0 ].deal_id ) ) {
+						browser.browserAction.setIcon( {
+							path : {
+								"32": "../images/icon_active32x.png"
+							},
+							tabId: sender.tab.id
+						} );
+						browser.browserAction.setBadgeText( { text: deals_lenth.toString(), tabId: sender.tab.id } );
+						browser.browserAction.setBadgeBackgroundColor( {color: "green"} );
+					}
 				} else {
 					user_html = nullOrundefined( deals.stor_id ) ? print_user( user, undefined, host ) : print_user( user, deals.stor_id, host );
 					data = {
@@ -314,7 +324,6 @@ var get_data_from_content = async ( message, sender, sendResponse ) => {
 						host: host
 					}
 				}
-				
 			} else {
 				console.log( host );
 				data = new FormData();
@@ -328,8 +337,10 @@ var get_data_from_content = async ( message, sender, sendResponse ) => {
 				deals 			= api_response[ 0 ];
 				user			= api_response[ 1 ];
 				user_html = print_user( user, undefined, "couponifier.com" );
+				deals_html = print_deals( deals );
 				data = {
 					user_html: user_html,
+					deals_html: deals_html,
 					tabId: sender.tab.id,
 					host: host
 				}
@@ -340,7 +351,7 @@ var get_data_from_content = async ( message, sender, sendResponse ) => {
 			chrome.storage.local.set( data_to_send );
 		}
 	} );
-	sendResponse( { data: true } );
+	sendResponse( { data: 1 } );
 	return undefined;
 	if( response == undefined || Object.keys( response ).length == 0 ) return;
 }
