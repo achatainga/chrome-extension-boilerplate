@@ -55,7 +55,7 @@ window.addEventListener( "message", function( event ) {
 	if ( event.source != window )
 		return;
 
-	if ( event.data.token) {
+	if ( event.data.token ) {
 		console.log( "event data token" );
 		console.log( "Content script received message: " + event.data.token );
 		token = event.data.token;
@@ -81,6 +81,15 @@ async function get_deals() {
 		if ( typeof token.token != undefined && typeof token.token != "undefined" ) {
 			chrome.runtime.sendMessage( { host: host, token: token.token, action: "get_data_from_content" }, function( response ) {
 				// console.log( response );
+				var Switch = {
+					2: ( () => {  } ),
+					3: ( () => { get_deals(); } ),
+					"undefined": ( () => {
+
+					} )
+				}
+				Switch[ response.data ];
+				
 				if( response == undefined || Object.keys( response ).length == 0 ) return;
 			} );
 		} else {

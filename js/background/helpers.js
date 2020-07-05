@@ -164,6 +164,7 @@ var make_post = async ( url, data ) => {
 				} catch (e) {
 					callback("Error parsing response as JSON: ", e, "\nResponse is: " + this.responseText);
 				}
+				console.log( response );
                 resolve( response );
             }
         }

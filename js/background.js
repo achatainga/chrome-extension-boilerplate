@@ -245,6 +245,19 @@ var get_data_from_content = async ( message, sender, sendResponse ) => {
 			}
 
 			api_response    =  await make_post( "https://couponifier.com/api.php", data );
+			if ( nullOrundefined( api_response[ 0 ] ) ) {
+				var Switch = {
+					2: ( () => {
+						chrome.storage.local.set( { token: {} } );
+					} ),
+					3: ( () => {
+						chrome.storage.local.set( { token: {} } );
+					} )
+				}
+				Switch[ api_response ]();
+				sendResponse( { data: 3 } );
+				return;
+			}
 			console.log( api_response );
 			deals 			= api_response[ 0 ];
 			user			= api_response[ 1 ];
