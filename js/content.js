@@ -13,12 +13,6 @@ if (typeof(EXT_NAME_CONTENT_SCRIPT_LOADED) == 'undefined') {
 		link.setAttribute( 'type', 'text/css' );
 		link.setAttribute( 'href', path );
 		document.getElementsByTagName( 'head' )[ 0 ].appendChild( link );
-
-		// Load JS
-		// var path = chrome.extension.getURL( 'js/background/helpers.js' );
-		// var link = document.createElement( 'script' );
-		// link.setAttribute( 'src', path );
-		// document.getElementsByTagName( 'head' )[ 0 ].appendChild( link );
 		// End of initialize
 	}
 
@@ -43,7 +37,7 @@ if (typeof(EXT_NAME_CONTENT_SCRIPT_LOADED) == 'undefined') {
 }
 
 window.addEventListener( "message", function( event ) {
-	console.log( event );
+	// console.log( event );
 	var token;
 	// console.log( event.data );
 	// We only accept messages from ourselves
@@ -71,21 +65,21 @@ window.addEventListener( "message", function( event ) {
 
 async function get_deals() {
 	var host = window.location.host;
-	console.log( host );
-		chrome.storage.local.get( "token", async function( token ) {
+	// console.log( host );
+	chrome.storage.local.get( "token", async function( token ) {
 		var token = ( nullOrundefined( token.token ) && !isEmpty( token.token ) ) ? token.token : {};
 		chrome.runtime.sendMessage( { host: host, token: token, action: "get_data_from_api" }, function( response ) {
 			console.log( response );
-			if( response == undefined || Object.keys( response ).length == 0 ) return;
-			var Switch = {
-				1: ( () => {
-					return
-				} ),
-				2: ( () => { return } ),
-				3: ( () => { get_deals(); } ),
-				"default": ( () => { return } )
-			}
-			( Switch[ response.data ] || Switch[ 'default' ] )();
+			// if( response == undefined || Object.keys( response ).length == 0 ) return;
+			// var Switch = {
+			// 	1: ( () => {
+			// 		return
+			// 	} ),
+			// 	2: ( () => { return } ),
+			// 	3: ( () => { get_deals(); } ),
+			// 	"default": ( () => { return } )
+			// }
+			// ( Switch[ response.data ] || Switch[ 'default' ] )();
 		} );
 	} );
 }

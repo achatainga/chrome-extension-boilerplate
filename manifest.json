@@ -55,10 +55,10 @@
 			"38": "images/icon.png"
 		},
 		"default_title": "Couponifier.com",
-		"default_popup": "html/options.html"
+		"default_popup": "html/popup.html"
 	},
 	"options_ui": {
 		"chrome_style": true,
-		"page": "html/options.html"
+		"page": "html/popup.html"
 	}
 }

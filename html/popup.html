@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en" style="min-width: 450px;">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Couponifier.com - Extension | Addon</title>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="../css/bootstrap.min.css" >
+    </head>
+    <body id="body">
+        <main>
+            <header class=" border bg-light" style="position:relative">
+                <div class="container-fluid">
+                    <nav class="row navbar navbar-expand-lg navbar-light">
+                        <div class="col-xl-12">
+                            <div class="row no-gutters">
+                                <a class="navbar-brand mr-auto" href="/"><img class="img-fluid" src="https://couponifier.com/images/others/logo.png" alt="Couponifier logo" style="max-width: 50%;max-height:50%"></a>
+                                <div class="collapse navbar-collapse ml-auto" id="collapsibleNavId">
+                                    <ul class="navbar-nav mx-auto">
+                                        <li class="nav-item">
+                                            <a target="_blank" class="nav-link text-secondary" href="https://couponifier.com/deals.php"><i class="fas fa-piggy-bank    "></i> Deals</a>
+                                        </li>
+                                        <li class="nav-item text-secondary">
+                                            <a target="_blank" class="nav-link text-secondary" href="https://couponifier.com/coupons.php"><i class="fas fa-search-dollar    "></i> Coupons</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a target="_blank" class="nav-link text-secondary" href="https://couponifier.com/stores.php"><i class="fas fa-store    "></i> Stores</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a target="_blank" class="nav-link text-secondary" href="https://couponifier.com/forums.php"><i class="fas fa-comments    "></i> Forums</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a target="_blank" class="nav-link text-secondary" href="https://couponifier.com/blog.php"><i class="fas fa-rss    "></i> Blog</a>
+                                        </li>
+                                    </ul>
+                                    <ul class="navbar-nav ml-auto" id="nav_user"></ul>
+                                </div>
+                                <button class="navbar-toggler d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#collapsibleNavId" aria-controls="collapsibleNavId"
+                                    aria-expanded="false" aria-label="Toggle navigation">
+                                    <span class="navbar-toggler-icon"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="d-lg-none d-xl-block col-xl-2"></div>
+                    </nav>
+                </div>
+            </header>
+            <content>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="d-md-none d-lg-block col-lg-1 col-xl-2"></div>
+                        <div class="col-lg-10 col-xl-8">
+                            <div id="loader" class="d-flex justify-content-center"><img src="../images/couponifier.gif" alt="Couponifier loading"></div>
+                            <div id="header" >
+                                <div id="user"></div>
+                            </div>
+                            <div class="deals" id="deals"></div>
+                        </div>
+                        <div class="d-md-none d-lg-block col-lg-1 col-xl-2"></div>
+                    </div>
+                </div>
+            </content>
+        </main>
+        <script src="../js/background/helpers.js"></script>
+        <script src="../js/jquery-3.5.1.slim.min.js"></script>
+        <script src="../js/popper.min.js"></script>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script src="../js/popup.js" ></script>
+    </body>
+</html>

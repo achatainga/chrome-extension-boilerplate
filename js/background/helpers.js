@@ -171,7 +171,7 @@ var make_post = async ( url, data ) => {
 }
 
 var print_deals = ( deals ) => {
-	if ( !nullOrundefined( deals[ 0 ].deal_id ) ) {
+	if ( !nullOrundefined( deals ) && !isEmpty( deals ) && !nullOrundefined( deals[ 0 ].deal_id ) ) {
 		var html = `<h6 class="text-center h6">Click on any deal below</h6>`;
 		deals.map( function( data, index ) {
 			// console.log( data.deal_id );
@@ -194,15 +194,50 @@ var print_deals = ( deals ) => {
 	return html;
 }
 
+var print_store = () => {
+	var html = `
+	<div class="text-center justify-content-around d-flex flex-row" ><?php
+		if ( is_login() ) : ?>
+			<a href="#" style="color: <?php echo isset( $store[ "followed" ] ) && $store[ "followed" ] > 0 ? "#007bff" : "#6c757d"; ?>"
+				id="stor_id_<?php echo $store[ "stor_id" ]; ?>"
+				stor_name="<?php echo $store[ "stor_name" ]; ?>"
+				prefix="param_"
+				param_stor_id="<?php echo $store[ "stor_id" ]; ?>"                                                            
+				url = "stores_followers_insert.php"
+				onclick="on_click_process( this, event, store_follow_after );"
+			><i class="fas fa-heart"></i></a><?php
+		endif;
+		if ( is_login() ) : ?>
+			<a href="#" style="color: <?php echo isset( $store[ "alert" ] ) && $store[ "alert" ] > 0 ? "#007bff" : "#6c757d"; ?>"
+				id="alert_id_<?php echo $store[ "stor_id" ]; ?>"
+				stor_name="<?php echo $store[ "stor_name" ]; ?>"
+				prefix="param_"
+				param_stor_id="<?php echo $store[ "stor_id" ]; ?>"
+				url="stores_alerts_insert.php"
+				onclick="on_click_process( this, event, store_alert_after );"
+			><i class="fas fa-bell"></i></a><?php
+		endif; ?>
+		<a href="#"
+			onclick="event.preventDefault()"
+			id="store_sharer_<?php echo $store[ "stor_id" ] ?>"
+			tabindex="0"
+			role="button"
+			data-placement="bottom"
+			data-toggle="popover"
+			data-trigger="focus"
+			style="color: #6c757d"
+		><i class="fas fa-share-alt"></i></a><?php
+		if ( is_login() && user_can( "stores_insert.php" ) ) : ?>
+			<a href="stores_insert.php?step=edit&id=<?php echo $store[ "stor_id" ]; ?>"><i class="fas fa-edit    "></i></a><?php
+		endif; ?>
+	</div>
+	`;
+}
+
 var print_user = ( user, store = undefined, host = undefined ) => {
 	var html = ``;
 	if ( user.length > 0 ) {
-		html += `
-			<div class="container-fluid text-center d-flex justify-content-center p-2 flex-column">
-				<div class="row no-gutters d-flex justify-content-center flex-column">
-					<img class="img-fluid align-self-center" src="https://couponifier.com/images/others/logo.png" alt="Couponifier logo" style="max-width: 40%;max-height:40%">
-					<p class="col h6 text-center pt-2">` + user[ 0 ].fullname + `</p>
-				</div>`+ (
+		html += (
 					host == "couponifier.com" ? 
 					`<div class="row" id="user_actions">` +
 						( user[0].user_type == 3 ? `
@@ -228,9 +263,7 @@ var print_user = ( user, store = undefined, host = undefined ) => {
 					</div>`
 				) + `
 			</div>
-			`
-	} else {
-		html += `<div class="d-flex justify-content-right p-2"><a class="btn btn-info text-white link" href="https://couponifier.com/login.php">Login</a></div>`;
+			`;
 	}
 	return html;
 }
@@ -323,4 +356,74 @@ var print_undermaintenance = () => {
 			<div>Under Short Maintenance. Check again later</div>
 		</div>`;
 	return html
+}
+
+var on_click_process = async ( element, event, callback = undefined ) => {
+    event.preventDefault();
+    var prefix      = $( element ).attr( "prefix" );
+    var url         = $( element ).attr( "url" );
+    var data        = build_data_params( element.attributes, prefix );
+    var response    = await make_post( url, data );
+    // if ( response.hasOwnProperty( "success" ) && typeof response.success !==  "undefined" ) {
+    //     var color = ( response.success.general == "active" ) ? "#007bff" : "#6c757d";
+    //     $( element ).css( { color: color } );
+    //     if ( callback != undefined ) {
+    //         // console.log( response.success.general );
+    //         callback( element, response.success.general );
+    //     }
+    // }
+    if ( callback != undefined ) {
+        // console.log( response.success.general );
+        callback( element, response );
+    }
+}
+
+var is_login = ( api_response, tabID = undefined ) => {
+	var Switch = {
+		2: ( () => {
+			user_html = print_undermaintenance();
+			data = {
+				user_html: user_html,
+				tabId: tabId,
+				host: host
+			}
+			var data_to_send = {};
+			data_to_send[ tabId ] = data;
+			console.log( data_to_send );
+			chrome.storage.local.set( data_to_send );
+			return;
+		} ),
+		3: ( () => {
+			chrome.storage.local.set( { token: {} } );
+			return false;
+		} ),
+		"default": ( () => {
+			return false;
+		} )
+	}
+	return ( Switch[ api_response ] || Switch[ "default" ] )();
+}
+
+var updateIcon = ( senderTab, host, api_response ) => {
+	if ( host != "couponifier.com" && detectBrowser( "chrome" ) && !nullOrundefined( api_response ) && !isEmpty( api_response ) && !nullOrundefined( api_response[ 0 ] ) && !isEmpty( api_response[ 0 ] ) && !nullOrundefined( senderTab ) ) {
+		console.log( "is chrome" );
+		chrome.browserAction.setIcon( {
+			path : {
+				"32": "../images/icon_active32x.png"
+			},
+			tabId: senderTab.id
+		} );
+		chrome.browserAction.setBadgeText( { text: api_response[ 0 ].length.toString(), tabId: senderTab.id } );
+		chrome.browserAction.setBadgeBackgroundColor( {color: "green"} );
+	} else if ( host != "couponifier.com" && detectBrowser( "firefox" ) && !nullOrundefined( api_response ) && !isEmpty( api_response ) && !nullOrundefined( api_response[ 0 ] ) && !isEmpty( api_response[ 0 ] ) && !nullOrundefined( senderTab ) ) {
+		console.log( "is firefox" );
+		browser.browserAction.setIcon( {
+			path : {
+				"32": "../images/icon_active32x.png"
+			},
+			tabId: senderTab.id
+		} );
+		browser.browserAction.setBadgeText( { text: api_response[ 0 ].length.toString(), tabId: senderTab.id } );
+		browser.browserAction.setBadgeBackgroundColor( {color: "green"} );
+	}
 }
