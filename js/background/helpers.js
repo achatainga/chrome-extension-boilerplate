@@ -71,37 +71,8 @@ var sendHttpPostRequest = function( url, params, callback ) {
 		}
 	};
 	xhr.send( paramsString );
-};
-
-var nullOrundefined = variable => {
-	// console.log( variable );
-	if ( typeof variable == undefined || typeof variable == "undefined" || typeof variable == null || typeof variable == "null" || variable == undefined || variable == "undefined" || variable == null || variable == "null" ) {
-		// console.log( "Null or undefined" );
-		return true;
-	} else {
-		return false;
-	}
 }
-
-var extractHostname = url => {
-    var hostname;
-    //find & remove protocol (http, ftp, etc.) and get hostname
-
-    if ( url.indexOf( "//" ) > -1 ) {
-        hostname = url.split( '/' )[ 2 ];
-    }
-    else {
-        hostname = url.split( '/' )[ 0 ];
-    }
-
-    //find & remove port number
-    hostname = hostname.split( ':' )[ 0 ];
-    //find & remove "?"
-    hostname = hostname.split( '?' )[ 0 ];
-
-    return hostname;
-}
-
+///////////////////////////
 var copyTextToClipboard =  text => {
     if ( typeof event != "undefined" ) {
         event.preventDefault();
@@ -152,126 +123,23 @@ var copyTextToClipboard =  text => {
     document.body.removeChild(textArea);
 }
 
-var make_post = async ( url, data ) => {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open( "POST", url, true );
-    xhttp.send( data );
-    return new Promise( resolve => {
-        xhttp.onreadystatechange = function() {
-            if ( this.readyState == 4 && this.status == 200 ) {
-				try {
-					var response = JSON.parse( this.responseText );
-				} catch (e) {
-					callback("Error parsing response as JSON: ", e, "\nResponse is: " + this.responseText);
-				}
-                resolve( response );
-            }
-        }
-    } );
-}
+var extractHostname = url => {
+    var hostname;
+    //find & remove protocol (http, ftp, etc.) and get hostname
 
-var print_deals = ( deals ) => {
-	if ( !nullOrundefined( deals ) && !isEmpty( deals ) && !nullOrundefined( deals[ 0 ].deal_id ) ) {
-		var html = `<h6 class="text-center h6">Click on any deal below</h6>`;
-		deals.map( function( data, index ) {
-			// console.log( data.deal_id );
-			html +=`
-			<div class="card">
-				<div class="card-body">
-					<div class="container-fluid">
-						<div class="row d-flex justify-content-center text-center">
-							<h5 class="card-title">` + data.deal_title + `</h5>
-						</div>
-						<div class="row d-flex justify-content-center">` + 
-							( data.deal_type == 1 ? `<a class="btn btn-success text-white deal_code" href="#" deal_code="` + data.deal_code + `">` + data.deal_code + `</a>` : `` ) +
-							( data.deal_type == 2 ? `<a class="btn btn-primary text-white link" href="` + ( typeof data.deal_link == undefined || typeof data.deal_link == "undefined" || data.deal_link == null || data.deal_link == "null" ? `https://couponifier.com/deals_show.php?deal=` + data.deal_id : data.deal_link ) + `">Get Promotion</a>`: `` ) + `
-						</div>
-					</div>
-				</div>
-			</div>`;
-		} );
-	}
-	return html;
-}
+    if ( url.indexOf( "//" ) > -1 ) {
+        hostname = url.split( '/' )[ 2 ];
+    }
+    else {
+        hostname = url.split( '/' )[ 0 ];
+    }
 
-var print_store = ( stores, is_login ) => {
-	var html = ``;
-	stores.map( ( store ) => {
-		console.log( store );
-		html += `
-			<div class="card m-1">
-				<a id="" class="text-muted" href="https://couponifier.com/stores_show.php?store=` + store.stor_id + `&name=` + encodeURI( store.stor_name ) +`" target="_blank">
-					<div class="card-header text-center" style="min-height: 50px; max-height: 50px">
-						<h6 id="store_name_` + store.stor_id + `">` + store.stor_name +`</h6>
-					</div>
-				</a>
-				<div class="card-body">
-					<div class="text-center justify-content-center d-flex flex-column" style="min-height: 150px;max-height:150px" data-toggle="tooltip" data-placement="top" title="` + store.stor_name + `">
-						<a href="https://couponifier.com/stores_show.php?store=` + store.stor_id + `&name=` + encodeURI( store.stor_name ) + `" target="_blank">
-							<img src="` + store.logo + `" style="max-height:150px" class="img-fluid" alt="Get the best coupons, deals and promotions of ` + store.stor_name + `">
-						</a>
-					</div>
-				</div>` + 
-					(
-						is_login ? 
-							`
-							<div class="card-footer">
-								<div class="text-center justify-content-around d-flex flex-row" >
-									<a href="#" style="color: ` + ( !nullOrundefined( store.followed )  && store.followed > 0 ? "#007bff" : "#6c757d" ) + `"
-										id="store_follow_after"
-										stor_name="` + store.stor_name + `"
-										prefix="param_"
-										param_stor_id="` + store.stor_id + `"                                                            
-										url = "https://couponifier.com/stores_followers_insert.php"
-									><i class="fas fa-heart"></i></a>
-									<a href="#" style="color: ` + ( !nullOrundefined( store.alert ) && store.alert > 0 ? "#007bff" : "#6c757d" ) + `"
-										id="store_alert_after"
-										stor_name="` + store.stor_name + `"
-										prefix="param_"
-										param_stor_id="` + store.stor_id + `"
-										url="https://couponifier.com/stores_alerts_insert.php"
-									><i class="fas fa-bell"></i></a>
-								</div>
-							</div>` : ``
-					) + 
-			`</div>
-		`;
-	} );
-	return html;
-}
+    //find & remove port number
+    hostname = hostname.split( ':' )[ 0 ];
+    //find & remove "?"
+    hostname = hostname.split( '?' )[ 0 ];
 
-var print_user = ( user, store = undefined, host = undefined ) => {
-	var html = ``;
-	if ( user.length > 0 ) {
-		html += (
-					host == "couponifier.com" ? 
-					`<div class="row" id="user_actions">` +
-						( user[0].user_type == 3 ? `
-							<div class="col">
-								<a id="popup-button" class="btn btn-info text-white link" href="https://couponifier.com/submitdeal.php">Submit deal</a>
-							</div>` : `` ) + 
-						( user[0].user_type == 3 ? `
-							<div class="col">
-								<a class="btn btn-info text-white link" href="https://couponifier.com/stores_insert.php">Create Store</a>
-							</div>
-						` : `` ) + `
-					</div>` : 
-					`<div class="row" id="user_actions">` +
-						( user[0].user_type == 3 && !nullOrundefined( store ) ? `
-							<div class="col">
-								<a class="btn btn-info text-white link" href="https://couponifier.com/submitdeal.php?step=deal&store=` + store + `">Submit deal</a>
-							</div>` : `` ) + 
-						( user[0].user_type == 3 && nullOrundefined( store ) ? `
-							<div class="col">
-								<a class="btn btn-info text-white link" href="https://couponifier.com/submitdeal.php?step=store&find=` + btoa( host ) + `">Create Store</a>
-							</div>
-						` : `` ) + `
-					</div>`
-				) + `
-			</div>
-			`;
-	}
-	return html;
+    return hostname;
 }
 
 var isEmpty = ( obj ) => {
@@ -282,6 +150,34 @@ var isEmpty = ( obj ) => {
 	}
 	
 	return JSON.stringify( obj ) === JSON.stringify( {} );
+}
+
+var is_login = ( api_response, tabID = undefined ) => {
+	
+	var Switch = {
+
+		2: ( () => {
+			user_html = print_undermaintenance();
+			data = {
+				user_html: user_html,
+				tabId: tabId,
+				host: host
+			}
+			var data_to_send = {};
+			data_to_send[ tabId ] = data;
+			console.log( data_to_send );
+			chrome.storage.local.set( data_to_send );
+			return;
+		} ),
+		3: ( () => {
+			chrome.storage.local.set( { token: {} } );
+			return false;
+		} ),
+		"default": ( () => {
+			return api_response.user.hasOwnProperty( "user_id" ) && !nullOrundefined( api_response.user.user_id );
+		} )
+	}
+	return ( Switch[ api_response ] || Switch[ "default" ] )();
 }
 
 var detectBrowser = ( type ) => {
@@ -351,6 +247,172 @@ var detectBrowser = ( type ) => {
 	// document.body.innerHTML = output;
 }
 
+var make_post = async ( url, data ) => {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open( "POST", url, true );
+    xhttp.send( data );
+    return new Promise( resolve => {
+        xhttp.onreadystatechange = function() {
+            if ( this.readyState == 4 && this.status == 200 ) {
+				try {
+					var response = JSON.parse( this.responseText );
+				} catch (e) {
+					callback("Error parsing response as JSON: ", e, "\nResponse is: " + this.responseText);
+				}
+                resolve( response );
+            }
+        }
+    } );
+}
+
+var nullOrundefined = variable => {
+	// console.log( variable );
+	if ( typeof variable == undefined || typeof variable == "undefined" || typeof variable == null || typeof variable == "null" || variable == undefined || variable == "undefined" || variable == null || variable == "null" ) {
+		// console.log( "Null or undefined" );
+		return true;
+	} else {
+		return false;
+	}
+}
+
+var on_click_process = async ( element, event, callback = undefined ) => {
+    event.preventDefault();
+    var prefix      = $( element ).attr( "prefix" );
+    var url         = $( element ).attr( "url" );
+    var data        = build_data_params( element.attributes, prefix );
+    var response    = await make_post( url, data );
+    if ( callback != undefined ) {
+        callback( element, response );
+    }
+}
+
+var print_deals = ( api_response ) => {
+	var html = ``;
+	if ( !nullOrundefined( api_response ) && api_response.hasOwnProperty( "deals" ) ) {
+		var deals = api_response.deals;
+		if ( !nullOrundefined( deals ) && !isEmpty( deals ) ) {
+			deals.map( deal => {
+				html +=`
+					<div class="card">
+						<div class="card-body">
+							<div class="container-fluid">
+								<div class="row d-flex justify-content-center text-center">
+									<h5 class="card-title">` + deal.deal_title + `</h5>
+								</div>
+								<div class="row d-flex justify-content-center">` + 
+									( deal.deal_type == 1 ? `<a class="btn btn-success text-white deal_code" href="#" deal_code="` + deal.deal_code + `">` + deal.deal_code + `</a>` : `` ) +
+									( deal.deal_type == 2 ? `<a class="btn btn-primary text-white link" href="` + ( typeof deal.deal_link == undefined || typeof deal.deal_link == "undefined" || deal.deal_link == null || deal.deal_link == "null" ? `https://couponifier.com/deals_show.php?deal=` + deal.deal_id : deal.deal_link ) + `">Get Promotion</a>`: `` ) + `
+								</div>
+							</div>
+						</div>
+					</div>`;
+			} );
+		}
+	}
+
+	return html;
+}
+
+var print_permissions = ( api_response ) => {
+	var html = ``;
+	if ( !nullOrundefined( api_response ) && api_response.hasOwnProperty( "permissions" ) ) {
+		var permissions = api_response.permissions;
+		if ( !nullOrundefined( permissions ) && !isEmpty( permissions ) ) {
+			html += `
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+						` + api_response.user.user_login + `
+					</a>
+					<div class="dropdown-menu dropdown-menu-right">
+						<a class="dropdown-item" href="profile.php"><i class="fas fa-user"></i> Profile</a>
+						<a class="dropdown-item" href="settings.php"><i class="fas fa-cog"></i> Settings</a>
+						<a class="dropdown-item" href="chat.php"><i class="fas fa-comment"></i> Chat</a>
+						<div class='dropdown-divider'></div>
+			`;
+			permissions.map( permission => {
+				html += `
+					<a class="dropdown-item" href="https://couponifier.com/` + permission.usme_file + `" target="_blank">
+						<i class="fas fa-` + permission.usme_icon + `"></i> ` + permission.usme_title + `
+					</a>
+					
+				`;
+			} );
+			html += `
+					</div>
+				</li>`;
+		} else {
+			html += `
+				<li class="nav-item">
+					<a class="nav-link" href="https://couponifier.com/login.php" target="_blank"><i class="fas fa-sign-in-alt    "></i> Login</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="https://couponifier.com/register.php" target="_blank"><i class="fas fa-user-plus" aria-hidden="true"></i> Register</a>
+				</li>
+			`;
+		}
+	}
+
+	return html;
+}
+
+var print_store = ( api_response ) => {
+	var html = ``;
+	if ( !nullOrundefined( api_response ) && api_response.hasOwnProperty( "store" ) ) {
+		var store = api_response.store;
+		if ( !nullOrundefined( store ) && store.hasOwnProperty( "stor_id" ) ) {
+			html = `
+				<div class="card m-1">
+					<a id="" class="text-muted" href="https://couponifier.com/stores_show.php?store=` + store.stor_id + `&name=` + encodeURI( store.stor_name ) +`" target="_blank">
+						<div class="card-header text-center" style="min-height: 50px; max-height: 50px">
+							<h6 id="store_name_` + store.stor_id + `">` + store.stor_name +`</h6>
+						</div>
+					</a>
+					<div class="card-body">
+						<div class="text-center justify-content-center d-flex flex-column" style="min-height: 150px;max-height:150px" data-toggle="tooltip" data-placement="top" title="` + store.stor_name + `">
+							<a href="https://couponifier.com/stores_show.php?store=` + store.stor_id + `&name=` + encodeURI( store.stor_name ) + `" target="_blank">
+								<img src="` + store.logo + `" style="max-height:150px" class="img-fluid" alt="Get the best coupons, deals and promotions of ` + store.stor_name + `">
+							</a>
+						</div>
+					</div>` + 
+						(
+							is_login( api_response ) ? 
+								`
+								<div class="card-footer">
+									<div class="text-center justify-content-around d-flex flex-row" >
+										<a href="#" style="color: ` + ( !nullOrundefined( store.followed )  && store.followed > 0 ? "#007bff" : "#6c757d" ) + `"
+											id="store_follow_after"
+											stor_name="` + store.stor_name + `"
+											prefix="param_"
+											param_stor_id="` + store.stor_id + `"                                                            
+											url = "https://couponifier.com/stores_followers_insert.php"
+										><i class="fas fa-heart"></i></a>
+										<a href="#" style="color: ` + ( !nullOrundefined( store.alert ) && store.alert > 0 ? "#007bff" : "#6c757d" ) + `"
+											id="store_alert_after"
+											stor_name="` + store.stor_name + `"
+											prefix="param_"
+											param_stor_id="` + store.stor_id + `"
+											url="https://couponifier.com/stores_alerts_insert.php"
+										><i class="fas fa-bell"></i></a>
+									</div>
+								</div>` : ``
+						) + 
+				`</div>
+				<div class="d-flex justify-content-center">
+					<a class="btn btn-info text-white link" href="https://couponifier.com/submitdeal.php?step=deal&store=` + store.stor_id + `">Submit deal</a>
+				</div>
+			`;
+		} else {
+			html = `
+				<div class="d-flex justify-content-center">
+					<a class="btn btn-info text-white link" href="https://couponifier.com/stores_insert.php">Create Store</a>
+				</div>
+			`;
+		}
+	}
+	
+	return html;
+}
+
 var print_undermaintenance = () => {
 	var html = ``;
 	html += `
@@ -364,113 +426,38 @@ var print_undermaintenance = () => {
 	return html
 }
 
-var on_click_process = async ( element, event, callback = undefined ) => {
-    event.preventDefault();
-    var prefix      = $( element ).attr( "prefix" );
-    var url         = $( element ).attr( "url" );
-    var data        = build_data_params( element.attributes, prefix );
-    var response    = await make_post( url, data );
-    // if ( response.hasOwnProperty( "success" ) && typeof response.success !==  "undefined" ) {
-    //     var color = ( response.success.general == "active" ) ? "#007bff" : "#6c757d";
-    //     $( element ).css( { color: color } );
-    //     if ( callback != undefined ) {
-    //         // console.log( response.success.general );
-    //         callback( element, response.success.general );
-    //     }
-    // }
-    if ( callback != undefined ) {
-        // console.log( response.success.general );
-        callback( element, response );
-    }
-}
-
-var is_login = ( api_response, tabID = undefined ) => {
-	
-	var Switch = {
-
-		2: ( () => {
-			user_html = print_undermaintenance();
-			data = {
-				user_html: user_html,
-				tabId: tabId,
-				host: host
-			}
-			var data_to_send = {};
-			data_to_send[ tabId ] = data;
-			console.log( data_to_send );
-			chrome.storage.local.set( data_to_send );
-			return;
-		} ),
-		3: ( () => {
-			chrome.storage.local.set( { token: {} } );
-			return false;
-		} ),
-		"default": ( () => {
-			return api_response.user.map( user => {
-				return user.hasOwnProperty( "user_id" ) && !nullOrundefined( user.user_id );
-				console.log( user.hasOwnProperty( "user_id" ) && !nullOrundefined( user.user_id ) );
-				if ( user.hasOwnProperty( "user_id" ) && !nullOrundefined( user.user_id ) ) {
-					return true;
-				} else {
-					return false;
-				}
-			} );
-		} )
+var print_user = ( user, store = undefined, host = undefined ) => {
+	var html = ``;
+	if ( user.length > 0 ) {
+		html += (
+					host == "couponifier.com" ? 
+					`<div class="row" id="user_actions">` +
+						( user[0].user_type == 3 ? `
+							<div class="col">
+								<a id="popup-button" class="btn btn-info text-white link" href="https://couponifier.com/submitdeal.php">Submit deal</a>
+							</div>` : `` ) + 
+						( user[0].user_type == 3 ? `
+							<div class="col">
+								<a class="btn btn-info text-white link" href="https://couponifier.com/stores_insert.php">Create Store</a>
+							</div>
+						` : `` ) + `
+					</div>` : 
+					`<div class="row" id="user_actions">` +
+						( user[0].user_type == 3 && !nullOrundefined( store ) ? `
+							<div class="col">
+								<a class="btn btn-info text-white link" href="https://couponifier.com/submitdeal.php?step=deal&store=` + store + `">Submit deal</a>
+							</div>` : `` ) + 
+						( user[0].user_type == 3 && nullOrundefined( store ) ? `
+							<div class="col">
+								<a class="btn btn-info text-white link" href="https://couponifier.com/submitdeal.php?step=store&find=` + btoa( host ) + `">Create Store</a>
+							</div>
+						` : `` ) + `
+					</div>`
+				) + `
+			</div>
+			`;
 	}
-	return ( Switch[ api_response ] || Switch[ "default" ] )();
-}
-
-var updateIcon = ( message, sender, sendResponse ) => {
-	console.log( "update icon message received" );
-	if ( message.host != "couponifier.com" && detectBrowser( "chrome" ) ) {
-		console.log( "is chrome" );
-		chrome.browserAction.setIcon( {
-			path : {
-				"32": "../images/icon_active32x.png"
-			},
-			tabId: sender.tab.id
-		} );
-		chrome.browserAction.setBadgeText( { text: message.text, tabId: sender.tab.id } );
-		chrome.browserAction.setBadgeBackgroundColor( {color: "green"} );
-	} else if ( message.host != "couponifier.com" && detectBrowser( "firefox" ) ) {
-		console.log( "is firefox" );
-		browser.browserAction.setIcon( {
-			path : {
-				"32": "../images/icon_active32x.png"
-			},
-			tabId: sender.tab.id
-		} );
-		browser.browserAction.setBadgeText( { text: message.text, tabId: sender.tab.id } );
-		browser.browserAction.setBadgeBackgroundColor( {color: "green"} );
-	}
-	sendResponse( "updated" );
-	return true;
-}
-
-var store_alert_after = ( element, response ) => {
-    if ( response.hasOwnProperty( "success" ) && typeof response.success !==  "undefined" ) {
-        if ( response.success.general == "active" ) {
-            var color = "#007bff";
-            print_flash( "Alerts for " + $( element ).attr( "stor_name" ) + " are now active!", "success" );
-        } else {
-            var color = "#6c757d";
-            print_flash( "Alerts for " + $( element ).attr( "stor_name" ) + " are now inactive.", "info" );
-        }
-        $( element ).css( { color: color } );
-    }
-}
-
-var store_follow_after = ( element, response ) => {
-    if ( response.hasOwnProperty( "success" ) && typeof response.success !==  "undefined" ) {
-        if ( response.success.general == "active" ) {
-            var color = "#007bff";
-            print_flash( "You are now following " + $( element ).attr( "stor_name" ), "success" );
-        } else {
-            var color = "#6c757d";
-            print_flash( "You are no longer following " + $( element ).attr( "stor_name" ), "info" );
-        }
-        $( element ).css( { color: color } );
-    }
+	return html;
 }
 
 var print_flash = ( message, type ) => {
@@ -526,4 +513,57 @@ var print_flash = ( message, type ) => {
     setTimeout( function() {
         $( element ).parent().remove();
     }, 3200);
+}
+
+var store_alert_after = ( element, response ) => {
+    if ( response.hasOwnProperty( "success" ) && typeof response.success !==  "undefined" ) {
+        if ( response.success.general == "active" ) {
+            var color = "#007bff";
+            print_flash( "Alerts for " + $( element ).attr( "stor_name" ) + " are now active!", "success" );
+        } else {
+            var color = "#6c757d";
+            print_flash( "Alerts for " + $( element ).attr( "stor_name" ) + " are now inactive.", "info" );
+        }
+        $( element ).css( { color: color } );
+    }
+}
+
+var store_follow_after = ( element, response ) => {
+    if ( response.hasOwnProperty( "success" ) && typeof response.success !==  "undefined" ) {
+        if ( response.success.general == "active" ) {
+            var color = "#007bff";
+            print_flash( "You are now following " + $( element ).attr( "stor_name" ), "success" );
+        } else {
+            var color = "#6c757d";
+            print_flash( "You are no longer following " + $( element ).attr( "stor_name" ), "info" );
+        }
+        $( element ).css( { color: color } );
+    }
+}
+
+var updateIcon = ( message, sender, sendResponse ) => {
+	console.log( "update icon message received" );
+	if ( message.host != "couponifier.com" && detectBrowser( "chrome" ) ) {
+		console.log( "is chrome" );
+		chrome.browserAction.setIcon( {
+			path : {
+				"32": "../images/icon_active32x.png"
+			},
+			tabId: sender.tab.id
+		} );
+		chrome.browserAction.setBadgeText( { text: message.text, tabId: sender.tab.id } );
+		chrome.browserAction.setBadgeBackgroundColor( {color: "green"} );
+	} else if ( message.host != "couponifier.com" && detectBrowser( "firefox" ) ) {
+		console.log( "is firefox" );
+		browser.browserAction.setIcon( {
+			path : {
+				"32": "../images/icon_active32x.png"
+			},
+			tabId: sender.tab.id
+		} );
+		browser.browserAction.setBadgeText( { text: message.text, tabId: sender.tab.id } );
+		browser.browserAction.setBadgeBackgroundColor( {color: "green"} );
+	}
+	sendResponse( "updated" );
+	return true;
 }

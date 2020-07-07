@@ -69,7 +69,7 @@ async function get_deals() {
 		if( response == undefined || Object.keys( response ).length == 0 ) return;
 		console.log( response );
 		console.log( !nullOrundefined( response ) && !isEmpty( response ) && !nullOrundefined( response.deals ) && !isEmpty( response.deals ) );
-		if ( !nullOrundefined( response ) && !isEmpty( response ) && !nullOrundefined( response.deals ) && !isEmpty( response.deals ) ) {
+		if ( !nullOrundefined( response ) && !isEmpty( response ) && !nullOrundefined( response.deals ) && !isEmpty( response.deals ) && response.deals.length > 0 ) {
 			chrome.runtime.sendMessage( { action: "update_icon", text: response.deals.length.toString(), host: host }, async function( response ) {
 				console.log( response );
 			} );
