@@ -3,49 +3,45 @@ $( document ).ready( function() {
     chrome.tabs.query( { currentWindow: true, active: true }, function( tabs ) {
         var currentTab = tabs[ 0 ];
         // console.log( tabs );
-        chrome.storage.local.get( "token", async function( token ) {
-            var token = ( !nullOrundefined( token.token ) && !isEmpty( token.token ) ) ? token.token : {};
-            chrome.runtime.sendMessage( { host: extractHostname( currentTab.url ), token: token, action: "get_data_from_api" }, async function( response ) {
-                if ( response == undefined || Object.keys( response ).length == 0 ) { return };
-                console.log( response );
-                // if ( !nullOrundefined( response ) && !isEmpty( response ) && !nullOrundefined( response[ 0 ] ) && !nullOrundefined( response[ 1 ] ) ) {
-                //     var is_login = helpers.is_login( response );
-                //     var html = ``;
-                //     if ( !is_login ) {
-                //         html = `
-                //             <li class="nav-item">
-                //                 <a class="nav-link" href="https://couponifier.com/login.php"><i class="fas fa-sign-in-alt    "></i> Login</a>
-                //             </li>
-                //             <li class="nav-item">
-                //                 <a class="nav-link" href="https://couponifier.com/register.php"><i class="fas fa-user-plus" aria-hidden="true"></i> Register</a>
-                //             </li>
-                //         `;
-                //     } else {
-                //         html = `
-                //             <li class="nav-item dropdown">
-                //                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                //                     <!-- <img src="<?php //echo HOST_PATH; ?>/images/avatar_male.png" alt="..." class="rounded" style="max-width: 42px"> -->
-                //                     User
-                //                 </a>
-                //                 <div class="dropdown-menu dropdown-menu-right">
-                //                     <a class="dropdown-item" href="https://couponifier.com/profile.php"><i class="fas fa-user    "></i> Profile</a>
-                //                     <a class="dropdown-item" href="https://couponifier.com/settings.php"><i class="fas fa-cog    "></i> Settings</a>
-                //                     <a class="dropdown-item" href="https://couponifier.com/chat.php"><i class="fas fa-comment    "></i> Chat</a>
-                //                 </div>
-                //             </li>
-                //         `;
-                //     }
-                //     $( "#nav_user" ).append( html );
-                //     var deals = response[ 0 ];
-                //     var user = response[ 1 ];
-                //     deals_html = helpers.print_deals( deals );
-                //     user_html = helpers.print_user( user );
-                //     $( "#user" ).append( user_html );
-                //     $( "#deals" ).append( deals_html );
-                //     console.log( is_login );
-                //     handle_load();
-                // }
-            } );
+        chrome.runtime.sendMessage( { host: extractHostname( currentTab.url ), action: "get_data_from_api" }, async function( response ) {
+            if ( response == undefined || Object.keys( response ).length == 0 ) { return };
+            $( "#loader" ).remove();
+            console.log( response );
+            var is_login = helpers.is_login( response );
+            console.log( is_login );
+            $( "#nav_user" ).append( html );
+            var user = ( !nullOrundefined( response ) && !isEmpty( response ) ? response.user : [] );
+            var deals = ( !nullOrundefined( response ) && !isEmpty( response ) ? response.deals : [] );
+            var store = ( !nullOrundefined( response ) && !isEmpty( response ) ? response.store : [] );
+            var html;
+            if ( !is_login ) {
+                html = `
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://couponifier.com/login.php" target="_blank"><i class="fas fa-sign-in-alt    "></i> Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://couponifier.com/register.php" target="_blank"><i class="fas fa-user-plus" aria-hidden="true"></i> Register</a>
+                    </li>
+                `;
+            } else {
+                html = `
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            ` + user[ 0 ].fullname + `
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item" href="https://couponifier.com/profile.php" target="_blank"><i class="fas fa-user    "></i> Profile</a>
+                            <a class="dropdown-item" href="https://couponifier.com/settings.php" target="_blank"><i class="fas fa-cog    "></i> Settings</a>
+                            <a class="dropdown-item" href="https://couponifier.com/chat.php" target="_blank"><i class="fas fa-comment    "></i> Chat</a>
+                        </div>
+                    </li>
+                `;
+            }
+            $( "#user" ).append( helpers.print_user( user ) );
+            $( "#deals" ).append( helpers.print_deals( deals ) );
+            $( "#store" ).append( helpers.print_store( store, is_login ) );
+            handle_load();
+            // }
         } );
     } );
 } );
@@ -69,6 +65,8 @@ function handle_load() {
             window.open( $( this ).attr( "href" ) );
         } );
     } );
+    $( "#store_follow_after" ).on( "click", helpers.store_follow_after );
+    $( "#store_alert_after" ).on( "click", helpers.store_alert_after );
 }
 
 function print_html( data ) {

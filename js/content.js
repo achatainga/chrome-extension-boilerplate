@@ -65,21 +65,24 @@ window.addEventListener( "message", function( event ) {
 
 async function get_deals() {
 	var host = window.location.host;
-	// console.log( host );
-	chrome.storage.local.get( "token", async function( token ) {
-		var token = ( nullOrundefined( token.token ) && !isEmpty( token.token ) ) ? token.token : {};
-		chrome.runtime.sendMessage( { host: host, token: token, action: "get_data_from_api" }, function( response ) {
-			console.log( response );
-			// if( response == undefined || Object.keys( response ).length == 0 ) return;
-			// var Switch = {
-			// 	1: ( () => {
-			// 		return
-			// 	} ),
-			// 	2: ( () => { return } ),
-			// 	3: ( () => { get_deals(); } ),
-			// 	"default": ( () => { return } )
-			// }
-			// ( Switch[ response.data ] || Switch[ 'default' ] )();
-		} );
+	chrome.runtime.sendMessage( { host: host, action: "get_data_from_api" }, async function( response ) {
+		if( response == undefined || Object.keys( response ).length == 0 ) return;
+		console.log( response );
+		console.log( !nullOrundefined( response ) && !isEmpty( response ) && !nullOrundefined( response.deals ) && !isEmpty( response.deals ) );
+		if ( !nullOrundefined( response ) && !isEmpty( response ) && !nullOrundefined( response.deals ) && !isEmpty( response.deals ) ) {
+			chrome.runtime.sendMessage( { action: "update_icon", text: response.deals.length.toString(), host: host }, async function( response ) {
+				console.log( response );
+			} );
+		}
+		// if( response == undefined || Object.keys( response ).length == 0 ) return;
+		// var Switch = {
+		// 	1: ( () => {
+		// 		return
+		// 	} ),
+		// 	2: ( () => { return } ),
+		// 	3: ( () => { get_deals(); } ),
+		// 	"default": ( () => { return } )
+		// }
+		// ( Switch[ response.data ] || Switch[ 'default' ] )();
 	} );
 }

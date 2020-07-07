@@ -136,6 +136,7 @@ chrome.runtime.onMessage.addListener( function( message, sender, sendResponse ) 
 	// console.log( sender );
 	var Action = {
 		"get_data_from_api": get_data_from_api,
+		"update_icon": updateIcon,
 		"reload": function() {
 			console.log( "reloading" );
 			chrome.tabs.query( { active: true, currentWindow: true }, function( tabs ) {
@@ -150,24 +151,26 @@ chrome.runtime.onMessage.addListener( function( message, sender, sendResponse ) 
 var get_data_from_api = async ( message, sender, sendResponse ) => {
 	console.log( "GET DATA FROM API" );
 	return new Promise( async ( resolve, reject ) => {
-		var senderTab = ( !nullOrundefined( sender.tab ) ? sender.tab : { id: "popup", active: true } );
-		var token = ( !nullOrundefined( message.token ) && !isEmpty( message.token ) ? message.token : {} );
-		if ( senderTab.active ) {
-			var data, deals, stor_id, deal_id, user, api_response, deals_html, user_html, deals_lenth, host;
-			host = message.host;
-			data = new FormData();
-			data.append( "host", host );
-			if ( !isEmpty( token ) ) {
-				data.append( "token", token );
-			}
+		chrome.storage.local.get( "token", async function( token ) {
+			console.log( token );
+			console.log( !nullOrundefined( token.token ) && !isEmpty( token ) );
+			var token = ( !nullOrundefined( token.token ) && !isEmpty( token ) ) ? token.token : {};
+			console.log( token );
+			var senderTab = ( !nullOrundefined( sender.tab ) ? sender.tab : { id: "popup", active: true } );
+			if ( senderTab.active ) {
+				var data, api_response, host;
+				host = message.host;
+				data = new FormData();
+				data.append( "host", host );
+				if ( !isEmpty( token ) ) {
+					data.append( "token", token );
+				}
 
-			api_response    =  await make_post( "https://couponifier.com/api.php", data );
-			if ( senderTab.id != "popup" ) {
-				updateIcon( senderTab, host, api_response );
+				api_response    =  await make_post( "https://couponifier.com/api.php", data );
+				sendResponse( api_response )
+				resolve( api_response );
+				return true;
 			}
-			sendResponse( api_response )
-			resolve( api_response );
-			return true;
-		}
+		} );
 	} );
 }

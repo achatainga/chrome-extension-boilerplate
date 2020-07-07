@@ -194,44 +194,50 @@ var print_deals = ( deals ) => {
 	return html;
 }
 
-var print_store = () => {
-	var html = `
-	<div class="text-center justify-content-around d-flex flex-row" ><?php
-		if ( is_login() ) : ?>
-			<a href="#" style="color: <?php echo isset( $store[ "followed" ] ) && $store[ "followed" ] > 0 ? "#007bff" : "#6c757d"; ?>"
-				id="stor_id_<?php echo $store[ "stor_id" ]; ?>"
-				stor_name="<?php echo $store[ "stor_name" ]; ?>"
-				prefix="param_"
-				param_stor_id="<?php echo $store[ "stor_id" ]; ?>"                                                            
-				url = "stores_followers_insert.php"
-				onclick="on_click_process( this, event, store_follow_after );"
-			><i class="fas fa-heart"></i></a><?php
-		endif;
-		if ( is_login() ) : ?>
-			<a href="#" style="color: <?php echo isset( $store[ "alert" ] ) && $store[ "alert" ] > 0 ? "#007bff" : "#6c757d"; ?>"
-				id="alert_id_<?php echo $store[ "stor_id" ]; ?>"
-				stor_name="<?php echo $store[ "stor_name" ]; ?>"
-				prefix="param_"
-				param_stor_id="<?php echo $store[ "stor_id" ]; ?>"
-				url="stores_alerts_insert.php"
-				onclick="on_click_process( this, event, store_alert_after );"
-			><i class="fas fa-bell"></i></a><?php
-		endif; ?>
-		<a href="#"
-			onclick="event.preventDefault()"
-			id="store_sharer_<?php echo $store[ "stor_id" ] ?>"
-			tabindex="0"
-			role="button"
-			data-placement="bottom"
-			data-toggle="popover"
-			data-trigger="focus"
-			style="color: #6c757d"
-		><i class="fas fa-share-alt"></i></a><?php
-		if ( is_login() && user_can( "stores_insert.php" ) ) : ?>
-			<a href="stores_insert.php?step=edit&id=<?php echo $store[ "stor_id" ]; ?>"><i class="fas fa-edit    "></i></a><?php
-		endif; ?>
-	</div>
-	`;
+var print_store = ( stores, is_login ) => {
+	var html = ``;
+	stores.map( ( store ) => {
+		console.log( store );
+		html += `
+			<div class="card m-1">
+				<a id="" class="text-muted" href="https://couponifier.com/stores_show.php?store=` + store.stor_id + `&name=` + encodeURI( store.stor_name ) +`" target="_blank">
+					<div class="card-header text-center" style="min-height: 50px; max-height: 50px">
+						<h6 id="store_name_` + store.stor_id + `">` + store.stor_name +`</h6>
+					</div>
+				</a>
+				<div class="card-body">
+					<div class="text-center justify-content-center d-flex flex-column" style="min-height: 150px;max-height:150px" data-toggle="tooltip" data-placement="top" title="` + store.stor_name + `">
+						<a href="https://couponifier.com/stores_show.php?store=` + store.stor_id + `&name=` + encodeURI( store.stor_name ) + `" target="_blank">
+							<img src="` + store.logo + `" style="max-height:150px" class="img-fluid" alt="Get the best coupons, deals and promotions of ` + store.stor_name + `">
+						</a>
+					</div>
+				</div>` + 
+					(
+						is_login ? 
+							`
+							<div class="card-footer">
+								<div class="text-center justify-content-around d-flex flex-row" >
+									<a href="#" style="color: ` + ( !nullOrundefined( store.followed )  && store.followed > 0 ? "#007bff" : "#6c757d" ) + `"
+										id="store_follow_after"
+										stor_name="` + store.stor_name + `"
+										prefix="param_"
+										param_stor_id="` + store.stor_id + `"                                                            
+										url = "https://couponifier.com/stores_followers_insert.php"
+									><i class="fas fa-heart"></i></a>
+									<a href="#" style="color: ` + ( !nullOrundefined( store.alert ) && store.alert > 0 ? "#007bff" : "#6c757d" ) + `"
+										id="store_alert_after"
+										stor_name="` + store.stor_name + `"
+										prefix="param_"
+										param_stor_id="` + store.stor_id + `"
+										url="https://couponifier.com/stores_alerts_insert.php"
+									><i class="fas fa-bell"></i></a>
+								</div>
+							</div>` : ``
+					) + 
+			`</div>
+		`;
+	} );
+	return html;
 }
 
 var print_user = ( user, store = undefined, host = undefined ) => {
@@ -379,7 +385,9 @@ var on_click_process = async ( element, event, callback = undefined ) => {
 }
 
 var is_login = ( api_response, tabID = undefined ) => {
+	
 	var Switch = {
+
 		2: ( () => {
 			user_html = print_undermaintenance();
 			data = {
@@ -398,32 +406,124 @@ var is_login = ( api_response, tabID = undefined ) => {
 			return false;
 		} ),
 		"default": ( () => {
-			return false;
+			return api_response.user.map( user => {
+				return user.hasOwnProperty( "user_id" ) && !nullOrundefined( user.user_id );
+				console.log( user.hasOwnProperty( "user_id" ) && !nullOrundefined( user.user_id ) );
+				if ( user.hasOwnProperty( "user_id" ) && !nullOrundefined( user.user_id ) ) {
+					return true;
+				} else {
+					return false;
+				}
+			} );
 		} )
 	}
 	return ( Switch[ api_response ] || Switch[ "default" ] )();
 }
 
-var updateIcon = ( senderTab, host, api_response ) => {
-	if ( host != "couponifier.com" && detectBrowser( "chrome" ) && !nullOrundefined( api_response ) && !isEmpty( api_response ) && !nullOrundefined( api_response[ 0 ] ) && !isEmpty( api_response[ 0 ] ) && !nullOrundefined( senderTab ) ) {
+var updateIcon = ( message, sender, sendResponse ) => {
+	console.log( "update icon message received" );
+	if ( message.host != "couponifier.com" && detectBrowser( "chrome" ) ) {
 		console.log( "is chrome" );
 		chrome.browserAction.setIcon( {
 			path : {
 				"32": "../images/icon_active32x.png"
 			},
-			tabId: senderTab.id
+			tabId: sender.tab.id
 		} );
-		chrome.browserAction.setBadgeText( { text: api_response[ 0 ].length.toString(), tabId: senderTab.id } );
+		chrome.browserAction.setBadgeText( { text: message.text, tabId: sender.tab.id } );
 		chrome.browserAction.setBadgeBackgroundColor( {color: "green"} );
-	} else if ( host != "couponifier.com" && detectBrowser( "firefox" ) && !nullOrundefined( api_response ) && !isEmpty( api_response ) && !nullOrundefined( api_response[ 0 ] ) && !isEmpty( api_response[ 0 ] ) && !nullOrundefined( senderTab ) ) {
+	} else if ( message.host != "couponifier.com" && detectBrowser( "firefox" ) ) {
 		console.log( "is firefox" );
 		browser.browserAction.setIcon( {
 			path : {
 				"32": "../images/icon_active32x.png"
 			},
-			tabId: senderTab.id
+			tabId: sender.tab.id
 		} );
-		browser.browserAction.setBadgeText( { text: api_response[ 0 ].length.toString(), tabId: senderTab.id } );
+		browser.browserAction.setBadgeText( { text: message.text, tabId: sender.tab.id } );
 		browser.browserAction.setBadgeBackgroundColor( {color: "green"} );
 	}
+	sendResponse( "updated" );
+	return true;
+}
+
+var store_alert_after = ( element, response ) => {
+    if ( response.hasOwnProperty( "success" ) && typeof response.success !==  "undefined" ) {
+        if ( response.success.general == "active" ) {
+            var color = "#007bff";
+            print_flash( "Alerts for " + $( element ).attr( "stor_name" ) + " are now active!", "success" );
+        } else {
+            var color = "#6c757d";
+            print_flash( "Alerts for " + $( element ).attr( "stor_name" ) + " are now inactive.", "info" );
+        }
+        $( element ).css( { color: color } );
+    }
+}
+
+var store_follow_after = ( element, response ) => {
+    if ( response.hasOwnProperty( "success" ) && typeof response.success !==  "undefined" ) {
+        if ( response.success.general == "active" ) {
+            var color = "#007bff";
+            print_flash( "You are now following " + $( element ).attr( "stor_name" ), "success" );
+        } else {
+            var color = "#6c757d";
+            print_flash( "You are no longer following " + $( element ).attr( "stor_name" ), "info" );
+        }
+        $( element ).css( { color: color } );
+    }
+}
+
+var print_flash = ( message, type ) => {
+    var flash = $( "#flash" );
+    if ( flash.length > 0 ) {
+        flash.remove();
+    }
+    var types = {
+        'success': 'success',
+        'error': 'danger',
+        'danger': 'danger',
+        'info': 'info',
+        'primary': 'info',
+        'secondary': 'warning',
+        'warning': 'warning',
+        'default': 'primary'
+    }
+    var xxx = 
+    ( type == "success" ? `success` : 
+        ( type == "info" ? `info`: 
+            ( type == "warning" ? "warning" : "" )
+        )
+    )
+    var html =
+    `
+    <div id="flash">
+        <div class="flash alert alert-`
+            + ( types[ type ] || types[ 'default' ] )+ ` alert-dismissible fade show mt-1" role="alert"
+            style="
+                position: fixed;
+                right: 0px;
+                display: none;
+                z-index: 1
+            "
+        >
+            <strong>
+            </strong> ` + message + `
+        </div>
+    </div>
+    `;
+    $( html ).insertAfter( "header" );
+    flash = $( ".flash" );
+    var header_height = $( "header" ).height();
+    var scrollTop = window.pageYOffset;
+    var initialWidth = $( document ).outerWidth();
+    $( flash ).css( { "margin-right": -initialWidth, top: ( scrollTop == 0 ? header_height : 0 )} )
+    $( flash ).show();
+    $( flash ).animate( { "margin-right": 0 } ,'fast' );
+    var element = $( flash );
+    setTimeout( function() {
+        $( element ).animate( { "margin-right": -5000 } ,'fast' );
+    }, 3000);
+    setTimeout( function() {
+        $( element ).parent().remove();
+    }, 3200);
 }
