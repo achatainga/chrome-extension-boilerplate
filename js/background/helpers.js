@@ -313,9 +313,9 @@ var print_permissions = ( api_response ) => {
 						` + api_response.user.user_login + `
 					</a>
 					<div class="dropdown-menu dropdown-menu-right">
-						<a class="dropdown-item" href="profile.php"><i class="fas fa-user"></i> Profile</a>
-						<a class="dropdown-item" href="settings.php"><i class="fas fa-cog"></i> Settings</a>
-						<a class="dropdown-item" href="chat.php"><i class="fas fa-comment"></i> Chat</a>
+						<a class="dropdown-item" href="https://couponifier.com/profile.php?user=` + api_response.user.user_id + `" target="_blank"><i class="fas fa-user"></i> Profile</a>
+						<a class="dropdown-item" href="https://couponifier.com/settings.php" target="_blank"><i class="fas fa-cog"></i> Settings</a>
+						<a class="dropdown-item" href="https://couponifier.com/chat.php" target="_blank"><i class="fas fa-comment"></i> Chat</a>
 						<div class='dropdown-divider'></div>
 			`;
 			permissions.map( permission => {
