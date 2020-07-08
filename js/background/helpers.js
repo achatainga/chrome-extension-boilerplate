@@ -7,7 +7,7 @@ var ENVIRONMENT = 'production';
 //----------------------------------------------------------------------------------------------------------------------------------------------------
 // Global vars
 //----------------------------------------------------------------------------------------------------------------------------------------------------
-var PRINT_LOGS = true;
+var PRINT_LOGS = false;
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------
 // Helper functions
@@ -153,9 +153,7 @@ var isEmpty = ( obj ) => {
 }
 
 var is_login = ( api_response, tabID = undefined ) => {
-	
 	var Switch = {
-
 		2: ( () => {
 			user_html = print_undermaintenance();
 			data = {
@@ -165,7 +163,6 @@ var is_login = ( api_response, tabID = undefined ) => {
 			}
 			var data_to_send = {};
 			data_to_send[ tabId ] = data;
-			console.log( data_to_send );
 			chrome.storage.local.set( data_to_send );
 			return;
 		} ),
@@ -174,7 +171,7 @@ var is_login = ( api_response, tabID = undefined ) => {
 			return false;
 		} ),
 		"default": ( () => {
-			return api_response.user.hasOwnProperty( "user_id" ) && !nullOrundefined( api_response.user.user_id );
+			return api_response.user != null && api_response.user != "null" && typeof api_response.user != null && typeof api_response.user != "null" && api_response.user.hasOwnProperty( "user_id" ) && !nullOrundefined( api_response.user.user_id );
 		} )
 	}
 	return ( Switch[ api_response ] || Switch[ "default" ] )();
@@ -463,9 +460,7 @@ var store_alert_after = ( element, response ) => {
 }
 
 var updateIcon = ( message, sender, sendResponse ) => {
-	console.log( "update icon message received" );
 	if ( message.host != "couponifier.com" && detectBrowser( "chrome" ) ) {
-		console.log( "is chrome" );
 		chrome.browserAction.setIcon( {
 			path : {
 				"32": "../images/icon_active32x.png"
@@ -475,7 +470,6 @@ var updateIcon = ( message, sender, sendResponse ) => {
 		chrome.browserAction.setBadgeText( { text: message.text, tabId: sender.tab.id } );
 		chrome.browserAction.setBadgeBackgroundColor( {color: "green"} );
 	} else if ( message.host != "couponifier.com" && detectBrowser( "firefox" ) ) {
-		console.log( "is firefox" );
 		browser.browserAction.setIcon( {
 			path : {
 				"32": "../images/icon_active32x.png"

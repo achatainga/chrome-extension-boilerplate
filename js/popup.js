@@ -1,24 +1,35 @@
 var helpers = chrome.extension.getBackgroundPage();
-$( document ).ready( function() {
-    chrome.tabs.query( { currentWindow: true, active: true }, function( tabs ) {
-        var currentTab = tabs[ 0 ];
-        chrome.runtime.sendMessage( { host: helpers.extractHostname( currentTab.url ), action: "get_data_from_api" }, async function( response ) {
-            if ( response == undefined || Object.keys( response ).length == 0 ) { return };
-            console.log( response );
-            $( "#loader" ).remove();
-            $( "#nav_user" ).append( helpers.print_permissions( response ) );
-            $( "#deals" ).append( helpers.print_deals( response ) );
-            $( "#store" ).append( helpers.print_store( response ) );
-            handle_load();
+initialize();
+function initialize() {
+    var Switch = {
+        1: ( () => { return } ),
+        2: ( () => { return } ),
+        3: ( () => {
+            chrome.storage.local.set( { token: {} } );
+            initialize(); 
+        } ),
+        "default": ( () => { return } )
+    }
+    $( document ).ready( function() {
+        chrome.tabs.query( { currentWindow: true, active: true }, function( tabs ) {
+            var currentTab = tabs[ 0 ];
+            chrome.runtime.sendMessage( { host: helpers.extractHostname( currentTab.url ), action: "get_data_from_api" }, async function( response ) {
+                ( Switch[ response ] || Switch[ 'default' ] )();                
+                $( "#loader" ).remove();
+                $( "#nav_user" ).append( helpers.print_permissions( response ) );
+                $( "#deals" ).append( helpers.print_deals( response ) );
+                $( "#store" ).append( helpers.print_store( response ) );
+                handle_load();
+            } );
         } );
     } );
-} );
+}
+
 
 function handle_load() {
     $( document ).ready( function() {
         document.getElementById( 'body' ).style.minWidth = "450px";
         $( "#loader" ).remove();
-        // console.log( "I am ready" );
         $( ".deal_code" ).on( "click", function() {
             var element = $( this );
             var deal_code = $( this ).attr( "deal_code" );
@@ -96,14 +107,11 @@ function print_html( data ) {
 }
 
 var on_click_process = async ( event, callback = undefined ) => {
-    console.log( event );
     event.preventDefault();
     var element = $( event.currentTarget )[ 0 ];
-    console.log( element );
     var prefix  = $( element ).attr( "prefix" );
     var url     = $( element ).attr( "url" );
     chrome.storage.local.get( "token", async function( token ) {
-        console.log( token );
         var token = ( !helpers.nullOrundefined( token.token ) && !helpers.isEmpty( token ) ) ? token.token : {};
         if ( !helpers.isEmpty( token ) ) {
             $( element ).attr( prefix + "token", token );
@@ -118,7 +126,6 @@ var on_click_process = async ( event, callback = undefined ) => {
 }
 
 var build_data_params = ( attributes, prefix ) => {
-    console.log( attributes );
     var regex = new RegExp( prefix );
     var data = new FormData();
     $.each( attributes, function() {

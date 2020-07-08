@@ -67,7 +67,7 @@ var onTabUpdate = function( tabId, info, tab ) {
 
 // Called every time a tab is replaced
 var onTabReplace = function( addedTabId, replacedTabId ) {
-	logWarn( "Tab " + replacedTabId + " replaced with " + addedTabId );
+	// logWarn( "Tab " + replacedTabId + " replaced with " + addedTabId );
 	chrome.tabs.get( addedTabId, function( tab ) {
 		return initializeTab( tab, false );
 	} );
@@ -132,45 +132,34 @@ initializeBackgroundScript();
 
 //////////////////////////////////
 chrome.runtime.onMessage.addListener( function( message, sender, sendResponse ) {
-	// console.log( message );
-	// console.log( sender );
 	var Action = {
 		"get_data_from_api": get_data_from_api,
 		"update_icon": updateIcon,
 		"reload": function() {
-			console.log( "reloading" );
 			chrome.tabs.query( { active: true, currentWindow: true }, function( tabs ) {
 				chrome.tabs.update( tabs[ 0 ].id, { url: tabs[ 0 ].url } );
 			} );
 		}
 	}
-	var data = Action[ message.action ]( message, sender, sendResponse )
+	Action[ message.action ]( message, sender, sendResponse )
 	return true;
 } );
 
 var get_data_from_api = async ( message, sender, sendResponse ) => {
-	console.log( "GET DATA FROM API" );
 	return new Promise( async ( resolve, reject ) => {
 		chrome.storage.local.get( "token", async function( token ) {
-			console.log( token );
-			console.log( !nullOrundefined( token.token ) && !isEmpty( token ) );
 			var token = ( !nullOrundefined( token.token ) && !isEmpty( token ) ) ? token.token : {};
-			console.log( token );
-			var senderTab = ( !nullOrundefined( sender.tab ) ? sender.tab : { id: "popup", active: true } );
-			if ( senderTab.active ) {
-				var data, api_response, host;
-				host = message.host;
-				data = new FormData();
-				data.append( "host", host );
-				if ( !isEmpty( token ) ) {
-					data.append( "token", token );
-				}
-
-				api_response    =  await make_post( "https://couponifier.com/api.php", data );
-				sendResponse( api_response )
-				resolve( api_response );
-				return true;
+			var data, api_response, host;
+			host = message.host;
+			data = new FormData();
+			data.append( "host", host );
+			if ( !isEmpty( token ) ) {
+				data.append( "token", token );
 			}
+			api_response    =  await make_post( "https://couponifier.com/api.php", data );
+			sendResponse( api_response )
+			resolve( api_response );
+			return true;
 		} );
 	} );
 }
