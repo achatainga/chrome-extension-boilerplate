@@ -15,7 +15,6 @@
 
 	"permissions": [
 		"alarms",
-		"all_urls",
 		"tabs",
 		"storage",
 		"activeTab",

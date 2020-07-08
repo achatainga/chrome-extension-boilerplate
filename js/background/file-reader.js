@@ -66,7 +66,7 @@ var readFilesFromDisk = function( debug, filesArg, cb ) {
 // Read a single file from cache (return an empty string if not found in cache)
 var readFileFromCache = function( filename ) {
 	if ( typeof( FILE_CACHE[ filename ] ) == 'undefined' ) {
-		logError( 'Cannot find file ' + filename + ' in cache' );
+		// logError( 'Cannot find file ' + filename + ' in cache' );
 		return "";
 	}
 	var val = FILE_CACHE[ filename ];
