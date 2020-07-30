@@ -4,7 +4,7 @@ function initialize() {
     $( document ).ready( function() {
         chrome.tabs.query( { currentWindow: true, active: true }, function( tabs ) {
             var currentTab = tabs[ 0 ];
-            var parsed = psl.parse( currentTab.url );
+            var parsed = psl.parse( helpers.extractHostname( currentTab.url ) );
             console.log( parsed );
             console.log( 'https://couponifier.com/ext_store.php?link=' + parsed.domain );
             $( '#couponifier_iframe' ).attr( 'src', 'https://couponifier.com/ext_store.php?link=' + parsed.domain );
