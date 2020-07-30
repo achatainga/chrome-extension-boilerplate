@@ -147,19 +147,13 @@ chrome.runtime.onMessage.addListener( function( message, sender, sendResponse ) 
 
 var get_data_from_api = async ( message, sender, sendResponse ) => {
 	return new Promise( async ( resolve, reject ) => {
-		chrome.storage.local.get( "token", async function( token ) {
-			var token = ( !nullOrundefined( token.token ) && !isEmpty( token ) ) ? token.token : {};
-			var data, api_response, host;
-			host = message.host;
-			data = new FormData();
-			data.append( "host", host );
-			if ( !isEmpty( token ) ) {
-				data.append( "token", token );
-			}
-			api_response    =  await make_post( "https://couponifier.com/api.php", data );
-			sendResponse( api_response )
-			resolve( api_response );
-			return true;
-		} );
+		var data, api_response, host;
+		host = message.host;
+		data = new FormData();
+		data.append( "host", host );
+		api_response    =  await make_post( "https://couponifier.com/api.php", data );
+		sendResponse( api_response )
+		resolve( api_response );
+		return true;
 	} );
 }
