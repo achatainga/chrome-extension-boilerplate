@@ -7,7 +7,7 @@ function initialize() {
             var parsed = psl.parse( helpers.extractHostname( currentTab.url ) );
             console.log( parsed );
             console.log( 'http://45.230.168.50/ext_store.php?link=' + parsed.domain );
-            $( '#couponifier_iframe' ).attr( 'src', 'http://45.230.168.50/ext_store.php?link=' + parsed.domain );
+            $( '#couponifier_iframe' ).attr( 'src', 'http://45.230.168.50/ext_store.php?link=' + parsed.domain + '&header_no=true&footer_no=true' );
             // chrome.runtime.sendMessage( { host: helpers.extractHostname( currentTab.url ), action: "get_data_from_api" }, async function( response ) {
                 
             //     handle_load();
