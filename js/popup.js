@@ -4,9 +4,9 @@ function initialize() {
     $( document ).ready( function() {
         chrome.tabs.query( { currentWindow: true, active: true }, function( tabs ) {
             var currentTab = tabs[ 0 ];
-            // var parsed = psl.parse('one.two.roothost.co.uk');
-            console.log( 'https://couponifier.com/ext_store.php?link=' + psl.parse( currentTab.url ).domain );
-            $( '#couponifier_iframe' ).attr( 'src', 'https://couponifier.com/ext_store.php?link=' + psl.parse( currentTab.url ).domain );
+            var parsed = psl.parse( currentTab.url );
+            console.log( 'https://couponifier.com/ext_store.php?link=' + parsed.domain );
+            $( '#couponifier_iframe' ).attr( 'src', 'https://couponifier.com/ext_store.php?link=' + parsed.domain );
             // chrome.runtime.sendMessage( { host: helpers.extractHostname( currentTab.url ), action: "get_data_from_api" }, async function( response ) {
                 
             //     handle_load();
