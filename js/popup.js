@@ -4,6 +4,7 @@ function initialize() {
     $( document ).ready( function() {
         chrome.tabs.query( { currentWindow: true, active: true }, function( tabs ) {
             var currentTab = tabs[ 0 ];
+            console.log( 'https://couponifier.com/ext_store.php?link=' + helpers.extractHostname( currentTab.url ) );
             $( '$couponifier_iframe' ).attr( 'src', 'https://couponifier.com/ext_store.php?link=' + helpers.extractHostname( currentTab.url ) );
             // chrome.runtime.sendMessage( { host: helpers.extractHostname( currentTab.url ), action: "get_data_from_api" }, async function( response ) {
                 
