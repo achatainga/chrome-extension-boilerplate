@@ -1,26 +1,14 @@
 var helpers = chrome.extension.getBackgroundPage();
 initialize();
 function initialize() {
-    var Switch = {
-        1: ( () => { return } ),
-        2: ( () => { return } ),
-        3: ( () => {
-            chrome.storage.local.set( { token: {} } );
-            initialize(); 
-        } ),
-        "default": ( () => { return } )
-    }
     $( document ).ready( function() {
         chrome.tabs.query( { currentWindow: true, active: true }, function( tabs ) {
             var currentTab = tabs[ 0 ];
-            chrome.runtime.sendMessage( { host: helpers.extractHostname( currentTab.url ), action: "get_data_from_api" }, async function( response ) {
-                ( Switch[ response ] || Switch[ 'default' ] )();                
-                $( "#loader" ).remove();
-                $( "#nav_user" ).append( helpers.print_permissions( response ) );
-                $( "#deals" ).append( helpers.print_deals( response ) );
-                $( "#store" ).append( helpers.print_store( response ) );
-                handle_load();
-            } );
+            $( 'iframe' ).attr( 'src', 'https://couponifier.com/ext_store.php?link=' + helpers.extractHostname( currentTab.url ) );
+            // chrome.runtime.sendMessage( { host: helpers.extractHostname( currentTab.url ), action: "get_data_from_api" }, async function( response ) {
+                
+            //     handle_load();
+            // } );
         } );
     } );
 }
