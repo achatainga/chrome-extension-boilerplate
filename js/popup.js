@@ -6,8 +6,8 @@ function initialize() {
             var currentTab = tabs[ 0 ];
             var parsed = psl.parse( helpers.extractHostname( currentTab.url ) );
             console.log( parsed );
-            console.log( 'https://couponifier.com/ext_store.php?link=' + parsed.domain );
-            $( '#couponifier_iframe' ).attr( 'src', 'https://couponifier.com/ext_store.php?link=' + parsed.domain );
+            console.log( 'http://45.230.168.50/ext_store.php?link=' + parsed.domain );
+            $( '#couponifier_iframe' ).attr( 'src', 'http://45.230.168.50/ext_store.php?link=' + parsed.domain );
             // chrome.runtime.sendMessage( { host: helpers.extractHostname( currentTab.url ), action: "get_data_from_api" }, async function( response ) {
                 
             //     handle_load();
