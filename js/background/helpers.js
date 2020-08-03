@@ -455,7 +455,7 @@ var store_alert_after = ( element, response ) => {
 }
 
 var updateIcon = ( message, sender, sendResponse ) => {
-	if ( message.host != "couponifier.com" && detectBrowser( "chrome" ) ) {
+	if ( !message.url.includes( "couponifier.com" ) && detectBrowser( "chrome" ) ) {
 		chrome.browserAction.setIcon( {
 			path : {
 				"32": "../images/icon_active32x.png"
@@ -464,7 +464,7 @@ var updateIcon = ( message, sender, sendResponse ) => {
 		} );
 		chrome.browserAction.setBadgeText( { text: message.text, tabId: sender.tab.id } );
 		chrome.browserAction.setBadgeBackgroundColor( {color: "green"} );
-	} else if ( message.host != "couponifier.com" && detectBrowser( "firefox" ) ) {
+	} else if ( ! message.url.includes( "couponifier.com" ) && detectBrowser( "firefox" ) ) {
 		browser.browserAction.setIcon( {
 			path : {
 				"32": "../images/icon_active32x.png"

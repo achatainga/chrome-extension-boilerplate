@@ -147,10 +147,10 @@ chrome.runtime.onMessage.addListener( function( message, sender, sendResponse ) 
 
 var get_data_from_api = async ( message, sender, sendResponse ) => {
 	return new Promise( async ( resolve, reject ) => {
-		var data, api_response, host;
-		host = message.host;
+		var data, api_response, url;
+		url = message.url;
 		data = new FormData();
-		data.append( "host", host );
+		data.append( "url", url );
 		api_response    =  await make_post( "https://couponifier.com/api.php", data );
 		sendResponse( api_response )
 		resolve( api_response );

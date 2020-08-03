@@ -34,10 +34,10 @@ if (typeof(EXT_NAME_CONTENT_SCRIPT_LOADED) == 'undefined') {
 }
 
 async function get_deals() {
-	var host = window.location.host;
-	chrome.runtime.sendMessage( { host: host, action: "get_data_from_api" }, async function( response ) {
+	var url = window.location;
+	chrome.runtime.sendMessage( { url: url, action: "get_data_from_api" }, async function( response ) {
 		if ( !nullOrundefined( response ) && !isEmpty( response ) ) {
-			chrome.runtime.sendMessage( { action: "update_icon", text: response.toString(), host: host }, async function( response ) {
+			chrome.runtime.sendMessage( { action: "update_icon", text: response.toString(), url: url }, async function( response ) {
 			} );
 		}
 	} );
