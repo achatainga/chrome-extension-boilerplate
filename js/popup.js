@@ -22,17 +22,17 @@ function handle_load() {
         }
     }
 
-    myIframe.window.document.body.onload = () => {
-        console.log( this.window.document.body.getElementsByClassName( "copy" ) );
-        Array.prototype.forEach.call( this.window.document.body.getElementsByClassName( "copy" ), function( element ) {
-            element.addEventListener( "click", ( event ) => {
-                event.preventDefault();
-                copyTextToClipboard( event.target.previousElementSibling.innerHTML );
-            } );
-            // Do stuff here
-            console.log( element.tagName );
-        } );
-    }
+    // myIframe.window.document.body.onload = () => {
+    //     console.log( this.window.document.body.getElementsByClassName( "copy" ) );
+    //     Array.prototype.forEach.call( this.window.document.body.getElementsByClassName( "copy" ), function( element ) {
+    //         element.addEventListener( "click", ( event ) => {
+    //             event.preventDefault();
+    //             copyTextToClipboard( event.target.previousElementSibling.innerHTML );
+    //         } );
+    //         // Do stuff here
+    //         console.log( element.tagName );
+    //     } );
+    // }
 }
 
 var print_flash = ( message, type ) => {
