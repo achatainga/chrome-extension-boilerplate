@@ -11,35 +11,7 @@ function initialize() {
     } );
 }
 
-
 function handle_load() {
-    console.log( "hello world" );
-    var myIframe = document.getElementById( "couponifier_iframe" )
-    myIframe.onreadystatechange = function() {
-        console.log( myIframe.readyState );
-        if ( myIframe.readyState == 'complete' ) {
-            console.log( "iframe loaded");
-            console.log( myIframe.window.document.body.getElementsByClassName( "copy" ) );
-        }
-    }
-    myIframe.addEventListener( "load", () => {
-        console.log( this.document.querySelector( ".copy" ) );
-        console.log( myIframe );
-        console.log( myIframe.getElementsByClassName( "copy" ) );
-        console.log( myIframe.contentWindow.document.body.getElementsByClassName( "copy" ) );
-    } );
-
-    // myIframe.window.document.body.onload = () => {
-    //     console.log( this.window.document.body.getElementsByClassName( "copy" ) );
-    //     Array.prototype.forEach.call( this.window.document.body.getElementsByClassName( "copy" ), function( element ) {
-    //         element.addEventListener( "click", ( event ) => {
-    //             event.preventDefault();
-    //             copyTextToClipboard( event.target.previousElementSibling.innerHTML );
-    //         } );
-    //         // Do stuff here
-    //         console.log( element.tagName );
-    //     } );
-    // }
 }
 
 var print_flash = ( message, type ) => {
@@ -95,70 +67,4 @@ var print_flash = ( message, type ) => {
     setTimeout( function() {
         $( element ).parent().remove();
     }, 3200);
-}
-
-function print_html( data ) {
-    $( "#user" ).append( data.user_html );
-    $( "#deals" ).append( data.deals_html );
-}
-
-var on_click_process = async ( event, callback = undefined ) => {
-    event.preventDefault();
-    var element = $( event.currentTarget )[ 0 ];
-    var prefix  = $( element ).attr( "prefix" );
-    var url     = $( element ).attr( "url" );
-    chrome.storage.local.get( "token", async function( token ) {
-        var token = ( !helpers.nullOrundefined( token.token ) && !helpers.isEmpty( token ) ) ? token.token : {};
-        if ( !helpers.isEmpty( token ) ) {
-            $( element ).attr( prefix + "token", token );
-        }
-        var data        = build_data_params( element.attributes, prefix );
-        var response    = await helpers.make_post( url, data );
-        if ( event.data.callback != undefined ) {
-            var call = event.data.callback;
-            window[ call ]( element, response );
-        }
-    } );
-}
-
-var build_data_params = ( attributes, prefix ) => {
-    var regex = new RegExp( prefix );
-    var data = new FormData();
-    $.each( attributes, function() {
-        // https://stackoverflow.com/questions/14645806/get-all-attributes-of-an-element-using-jquery
-        if( this.specified && this.name.match( regex ) ) {
-            data.append( this.name.replace( regex, "" ), this.value );
-        }
-    } );
-    return data;
-}
-
-var store_alert_after = ( element, response ) => {
-    if ( response.hasOwnProperty( "success" ) && typeof response.success !==  "undefined" ) {
-        if ( response.success.general == "active" ) {
-            var color = "#007bff";
-            print_flash( "Alerts for " + $( element ).attr( "stor_name" ) + " are now active!", "success" );
-        } else {
-            var color = "#6c757d";
-            print_flash( "Alerts for " + $( element ).attr( "stor_name" ) + " are now inactive.", "info" );
-        }
-        $( element ).css( { color: color } );
-    } else {
-        print_flash( "Make sure you are logged int at couponifier.com first", "error" );
-    }
-}
-
-var store_follow_after = ( element, response ) => {
-    if ( response.hasOwnProperty( "success" ) && typeof response.success !==  "undefined" ) {
-        if ( response.success.general == "active" ) {
-            var color = "#007bff";
-            print_flash( "You are now following " + $( element ).attr( "stor_name" ), "success" );
-        } else {
-            var color = "#6c757d";
-            print_flash( "You are no longer following " + $( element ).attr( "stor_name" ), "info" );
-        }
-        $( element ).css( { color: color } );
-    } else {
-        print_flash( "Make sure you are logged int at couponifier.com first", "error" );
-    }
 }
