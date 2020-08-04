@@ -27,7 +27,7 @@ function handle_load() {
                 // Do stuff here
                 console.log( element.tagName );
             } );
-        } );
+        }
     } );
 }
 
