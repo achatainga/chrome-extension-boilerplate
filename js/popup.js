@@ -15,10 +15,10 @@ function initialize() {
 function handle_load() {
     console.log( "hello world" );
     var myIframe = document.getElementById( "couponifier_iframe" )
-    myiframe.onreadystatechange = function() {
-        if ( myiframe.readyState == 'complete' ) {
+    myIframe.onreadystatechange = function() {
+        if ( myIframe.readyState == 'complete' ) {
             console.log( "iframe loaded");
-            console.log( myiframe.window.document.body.getElementsByClassName( "copy" ) );
+            console.log( myIframe.window.document.body.getElementsByClassName( "copy" ) );
         }
     }
 
