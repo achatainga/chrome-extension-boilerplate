@@ -6,15 +6,7 @@ function initialize() {
             var currentTab = tabs[ 0 ];
             var parsed = psl.parse( helpers.extractHostname( currentTab.url ) );
             $( '#couponifier_iframe' ).attr( 'src', 'https://couponifier.com/ext_store.php?link=' + parsed.domain + '&header_no=true&footer_no=true' );
-            Array.prototype.forEach.call( document.getElementById( "couponifier_iframe" ).contentWindow.document.body.getElementsByClassName( "copy" ), function( element ) {
-                element.addEventListener( "click", ( event ) => {
-                    event.preventDefault();
-                    copyTextToClipboard( event.target.previousElementSibling.innerHTML );
-                } );
-                // Do stuff here
-                console.log( element.tagName );
-            } );
-            console.log( document.getElementById( "couponifier_iframe" ).contentWindow.document.body.getElementsByClassName( "copy" ) );
+            handle_load();
         } );
     } );
 }
@@ -22,22 +14,16 @@ function initialize() {
 
 function handle_load() {
     $( document ).ready( function() {
-        document.getElementById( 'body' ).style.minWidth = "450px";
-        $( "#loader" ).remove();
-        $( ".deal_code" ).on( "click", function() {
-            var element = $( this );
-            var deal_code = $( this ).attr( "deal_code" );
-            copyTextToClipboard( $( this ).attr( "deal_code" ) );
-            $( this ).html( "Copied" );
-            setTimeout( function(){ element.html( deal_code ) }, 3000 );
-        } )
-        $( ".link" ).on( "click", function() {
-            window.open( $( this ).attr( "href" ) );
+        Array.prototype.forEach.call( document.getElementById( "couponifier_iframe" ).contentWindow.document.body.getElementsByClassName( "copy" ), function( element ) {
+            element.addEventListener( "click", ( event ) => {
+                event.preventDefault();
+                copyTextToClipboard( event.target.previousElementSibling.innerHTML );
+            } );
+            // Do stuff here
+            console.log( element.tagName );
         } );
+        console.log( document.getElementById( "couponifier_iframe" ).contentWindow.document.body.getElementsByClassName( "copy" ) );
     } );
-    
-    $( "#store_follow_after" ).on( "click", { callback: "store_follow_after" }, on_click_process );
-    $( "#store_alert_after" ).on( "click", { callback: "store_alert_after" }, on_click_process );
 }
 
 var print_flash = ( message, type ) => {
