@@ -23,7 +23,8 @@ function handle_load() {
         }
     }
     myIframe.addEventListener( "load", () => {
-        console.log( "from iframe" );
+        console.log( this );
+        console.log( myIframe );
         console.log( myIframe.getElementsByClassName( "copy" ) );
         console.log( myIframe.contentWindow.document.body.getElementsByClassName( "copy" ) );
     } );
