@@ -17,7 +17,7 @@ function handle_load() {
     var myIframe = document.getElementById( "couponifier_iframe" )
     myIframe.addEventListener( "load", () => {
         console.log( "iframe loaded");
-        this.window.addEventListener( "load", () => {
+        this.window.document.body.onload = () => {
             console.log( this.window.document.body.getElementsByClassName( "copy" ) );
             Array.prototype.forEach.call( this.window.document.body.getElementsByClassName( "copy" ), function( element ) {
                 element.addEventListener( "click", ( event ) => {
