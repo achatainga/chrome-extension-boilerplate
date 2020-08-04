@@ -15,16 +15,18 @@ function initialize() {
 function handle_load() {
     console.log( "hello world" );
     var myIframe = document.getElementById( "couponifier_iframe" )
-    myIframe.window.document.body.addEventListener( "load", () => {
-        console.log( this );
-        console.log( this.window.document.body.getElementsByClassName( "copy" ) );
-        Array.prototype.forEach.call( this.window.document.body.getElementsByClassName( "copy" ), function( element ) {
-            element.addEventListener( "click", ( event ) => {
-                event.preventDefault();
-                copyTextToClipboard( event.target.previousElementSibling.innerHTML );
+    myIframe.addEventListener( "load", () => {
+        console.log( "iframe loaded");
+        this.window.addEventListener( "load", () => {
+            console.log( this.window.document.body.getElementsByClassName( "copy" ) );
+            Array.prototype.forEach.call( this.window.document.body.getElementsByClassName( "copy" ), function( element ) {
+                element.addEventListener( "click", ( event ) => {
+                    event.preventDefault();
+                    copyTextToClipboard( event.target.previousElementSibling.innerHTML );
+                } );
+                // Do stuff here
+                console.log( element.tagName );
             } );
-            // Do stuff here
-            console.log( element.tagName );
         } );
     } );
 }
