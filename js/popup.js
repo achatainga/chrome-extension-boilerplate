@@ -23,10 +23,13 @@ function handle_load() {
         }
     }
     myIframe.addEventListener( "load", () => {
-        console.log( this.document.getElementsByClassName( "copy" ) );
-        console.log( myIframe );
-        console.log( myIframe.getElementsByClassName( "copy" ) );
-        console.log( myIframe.contentWindow.document.body.getElementsByClassName( "copy" ) );
+        setTimeout(() => {
+            console.log( this.document.getElementsByClassName( "copy" ) );
+            console.log( myIframe );
+            console.log( myIframe.getElementsByClassName( "copy" ) );
+            console.log( myIframe.contentWindow.document.body.getElementsByClassName( "copy" ) );
+        }, 2000);
+        
     } );
 
     // myIframe.window.document.body.onload = () => {
