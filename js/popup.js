@@ -17,8 +17,8 @@ function handle_load() {
     var myIframe = document.getElementById( "couponifier_iframe" )
     myIframe.addEventListener( "load", () => {
         console.log( this );
-        console.log( this.contentWindow.document.body.getElementsByClassName( "copy" ) );
-        Array.prototype.forEach.call( document.getElementById( "couponifier_iframe" ).contentWindow.document.body.getElementsByClassName( "copy" ), function( element ) {
+        console.log( this.window.document.body.getElementsByClassName( "copy" ) );
+        Array.prototype.forEach.call( this.window.document.body.getElementsByClassName( "copy" ), function( element ) {
             element.addEventListener( "click", ( event ) => {
                 event.preventDefault();
                 copyTextToClipboard( event.target.previousElementSibling.innerHTML );
