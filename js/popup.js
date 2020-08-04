@@ -25,6 +25,7 @@ function handle_load() {
     myIframe.addEventListener( "load", () => {
         console.log( "from iframe" );
         console.log( myIframe.getElementsByClassName( "copy" ) );
+        console.log( myIframe.contentWindow.document.body.getElementsByClassName( "copy" ) );
     } );
 
     // myIframe.window.document.body.onload = () => {
