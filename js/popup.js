@@ -14,6 +14,7 @@ function initialize() {
                 // Do stuff here
                 console.log( element.tagName );
             } );
+            console.log( document.getElementById( "couponifier_iframe" ).contentWindow.document.body.getElementsByClassName( "copy" ) );
         } );
     } );
 }
