@@ -22,6 +22,7 @@ function handle_load() {
             console.log( myIframe.window.document.body.getElementsByClassName( "copy" ) );
         }
     }
+    console.log( myIframe );
 
     // myIframe.window.document.body.onload = () => {
     //     console.log( this.window.document.body.getElementsByClassName( "copy" ) );
