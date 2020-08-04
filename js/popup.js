@@ -2,7 +2,14 @@ var helpers = chrome.extension.getBackgroundPage();
 initialize();
 function initialize() {
     $( document ).ready( function() {
-        document.getElementById( "couponifier_iframe" ).contentWindow.document.body.getElementsByClassName( "copy" ).each( index => { console.log( index ); } )
+        Array.prototype.forEach.call( document.getElementById( "couponifier_iframe" ).contentWindow.document.body.getElementsByClassName( "copy" ), function( element ) {
+            element.addEventListener( "click", ( event ) => {
+                event.preventDefault();
+                copyTextToClipboard( event.target.previousElementSibling.innerHTML );
+            } );
+            // Do stuff here
+            console.log( element.tagName );
+        } );
         chrome.tabs.query( { currentWindow: true, active: true }, function( tabs ) {
             var currentTab = tabs[ 0 ];
             var parsed = psl.parse( helpers.extractHostname( currentTab.url ) );
