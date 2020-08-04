@@ -13,7 +13,11 @@ function initialize() {
 
 
 function handle_load() {
-    $( document ).ready( function() {
+    window.addEventListener( "load", () => {
+        document.getElementById( "couponifier_iframe" ).addEventListener( "load", () => {
+            console.log( this );
+            console.log( this.contentWindow.document.body.getElementsByClassName( "copy" ) );
+        } );
         Array.prototype.forEach.call( document.getElementById( "couponifier_iframe" ).contentWindow.document.body.getElementsByClassName( "copy" ), function( element ) {
             element.addEventListener( "click", ( event ) => {
                 event.preventDefault();
