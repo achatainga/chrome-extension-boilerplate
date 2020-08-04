@@ -23,10 +23,7 @@ function handle_load() {
         }
     }
     myIframe.addEventListener( "load", () => {
-        var innerDoc = (myIframe.contentDocument) 
-               ? myIframe.contentDocument 
-               : myIframe.contentWindow.document;
-        console.log( innerDoc.getElementsByClassName( "copy" ) );
+        console.log( this.document.querySelector( ".copy" ) );
         console.log( myIframe );
         console.log( myIframe.getElementsByClassName( "copy" ) );
         console.log( myIframe.contentWindow.document.body.getElementsByClassName( "copy" ) );
