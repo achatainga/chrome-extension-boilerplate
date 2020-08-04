@@ -22,7 +22,7 @@ function handle_load() {
         }
     }
 
-    myIframe.document.body.onload = () => {
+    myIframe.window.document.body.onload = () => {
         console.log( this.window.document.body.getElementsByClassName( "copy" ) );
         Array.prototype.forEach.call( this.window.document.body.getElementsByClassName( "copy" ), function( element ) {
             element.addEventListener( "click", ( event ) => {
