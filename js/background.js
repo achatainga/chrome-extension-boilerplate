@@ -133,7 +133,7 @@ initializeBackgroundScript();
 //////////////////////////////////
 chrome.runtime.onMessage.addListener( function( message, sender, sendResponse ) {
 	var Action = {
-		"get_data_from_api": get_data_from_api,
+		"number_of_store_offers": number_of_store_offers,
 		"update_icon": updateIcon,
 		"reload": function() {
 			chrome.tabs.query( { active: true, currentWindow: true }, function( tabs ) {
@@ -145,15 +145,40 @@ chrome.runtime.onMessage.addListener( function( message, sender, sendResponse ) 
 	return true;
 } );
 
-var get_data_from_api = async ( message, sender, sendResponse ) => {
+var number_of_store_offers = async ( message, sender, sendResponse ) => {
 	return new Promise( async ( resolve, reject ) => {
 		var data, api_response, url;
 		url = message.url;
 		data = new FormData();
 		data.append( "url", url );
-		api_response    =  await make_post( "https://couponifier.com/api.php", data );
+		data.append( "action", "number_of_store_offers" );
+		api_response = await make_post( "https://couponifier.com/api.php", data );
 		sendResponse( api_response )
 		resolve( api_response );
 		return true;
 	} );
+}
+
+var updateIcon = ( message, sender, sendResponse ) => {
+	if ( !message.url.includes( "couponifier.com" ) && detectBrowser( "chrome" ) ) {
+		chrome.browserAction.setIcon( {
+			path : {
+				"32": "../images/icon_active32x.png"
+			},
+			tabId: sender.tab.id
+		} );
+		chrome.browserAction.setBadgeText( { text: message.text, tabId: sender.tab.id } );
+		chrome.browserAction.setBadgeBackgroundColor( {color: "green"} );
+	} else if ( ! message.url.includes( "couponifier.com" ) && detectBrowser( "firefox" ) ) {
+		browser.browserAction.setIcon( {
+			path : {
+				"32": "../images/icon_active32x.png"
+			},
+			tabId: sender.tab.id
+		} );
+		browser.browserAction.setBadgeText( { text: message.text, tabId: sender.tab.id } );
+		browser.browserAction.setBadgeBackgroundColor( {color: "green"} );
+	}
+	sendResponse( "updated" );
+	return true;
 }

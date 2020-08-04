@@ -453,27 +453,3 @@ var store_alert_after = ( element, response ) => {
         $( element ).css( { color: color } );
     }
 }
-
-var updateIcon = ( message, sender, sendResponse ) => {
-	if ( !message.url.includes( "couponifier.com" ) && detectBrowser( "chrome" ) ) {
-		chrome.browserAction.setIcon( {
-			path : {
-				"32": "../images/icon_active32x.png"
-			},
-			tabId: sender.tab.id
-		} );
-		chrome.browserAction.setBadgeText( { text: message.text, tabId: sender.tab.id } );
-		chrome.browserAction.setBadgeBackgroundColor( {color: "green"} );
-	} else if ( ! message.url.includes( "couponifier.com" ) && detectBrowser( "firefox" ) ) {
-		browser.browserAction.setIcon( {
-			path : {
-				"32": "../images/icon_active32x.png"
-			},
-			tabId: sender.tab.id
-		} );
-		browser.browserAction.setBadgeText( { text: message.text, tabId: sender.tab.id } );
-		browser.browserAction.setBadgeBackgroundColor( {color: "green"} );
-	}
-	sendResponse( "updated" );
-	return true;
-}

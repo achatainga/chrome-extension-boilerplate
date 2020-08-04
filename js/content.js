@@ -35,7 +35,7 @@ if (typeof(EXT_NAME_CONTENT_SCRIPT_LOADED) == 'undefined') {
 
 async function get_deals() {
 	var url = window.location.href;
-	chrome.runtime.sendMessage( { url: url, action: "get_data_from_api" }, async function( response ) {
+	chrome.runtime.sendMessage( { url: url, action: "number_of_store_offers" }, async function( response ) {
 		if ( !nullOrundefined( response ) && !isEmpty( response ) ) {
 			chrome.runtime.sendMessage( { action: "update_icon", text: response.toString(), url: url }, async function( response ) {
 			} );
