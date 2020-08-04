@@ -14,8 +14,10 @@ function initialize() {
 
 function handle_load() {
     window.addEventListener( "load", () => {
-        document.getElementById( "couponifier_iframe" ).addEventListener( "load", () => {
-            console.log( this );
+        console.log( "window load" )
+        var myIframe = document.getElementById( "couponifier_iframe" )
+        myIframe.addEventListener( "load", () => {
+            console.log( "iframe loaded" );
             console.log( this.contentWindow.document.body.getElementsByClassName( "copy" ) );
         } );
         Array.prototype.forEach.call( document.getElementById( "couponifier_iframe" ).contentWindow.document.body.getElementsByClassName( "copy" ), function( element ) {
