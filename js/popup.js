@@ -16,6 +16,7 @@ function handle_load() {
     console.log( "hello world" );
     var myIframe = document.getElementById( "couponifier_iframe" )
     myIframe.onreadystatechange = function() {
+        console.log( myIframe.readyState );
         if ( myIframe.readyState == 'complete' ) {
             console.log( "iframe loaded");
             console.log( myIframe.window.document.body.getElementsByClassName( "copy" ) );
