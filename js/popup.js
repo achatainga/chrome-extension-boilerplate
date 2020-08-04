@@ -13,6 +13,7 @@ function initialize() {
 
 
 function handle_load() {
+    console.log( "hello world" );
     window.addEventListener( "load", () => {
         console.log( "window load" )
         var myIframe = document.getElementById( "couponifier_iframe" )
