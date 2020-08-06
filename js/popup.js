@@ -5,7 +5,7 @@ function initialize() {
         chrome.tabs.query( { currentWindow: true, active: true }, function( tabs ) {
             var currentTab = tabs[ 0 ];
             var parsed = psl.parse( helpers.extractHostname( currentTab.url ) );
-            $( '#couponifier_iframe' ).attr( 'src', 'https://45.230.168.50/ext_store.php?link=' + parsed.domain + '&header_no=true&footer_no=true' );
+            $( '#couponifier_iframe' ).attr( 'src', 'https://couponifier.com/ext_store.php?link=' + parsed.domain + '&header_no=true&footer_no=true' );
         } );
     } );
 }
