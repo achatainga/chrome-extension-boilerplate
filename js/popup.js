@@ -6,6 +6,7 @@ function initialize() {
             var currentTab = tabs[ 0 ];
             var parsed = psl.parse( helpers.extractHostname( currentTab.url ) );
             $( '#couponifier_iframe' ).attr( 'src', 'https://couponifier.com/ext_store.php?link=' + parsed.domain + '&header_no=true&footer_no=true' );
+            $( '#couponifier_iframe' ).ready( () => $( '#loading' ).remove() );
         } );
     } );
 }
