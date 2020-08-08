@@ -13,10 +13,9 @@ if ( typeof ( EXT_NAME_CONTENT_SCRIPT_LOADED ) == 'undefined' ) {
 	// Start the extension content script
 	ExtName.initialize();
 }
-	
+
 async function call_api() {
-	var parsed = psl.parse( extractHostname( window.location.href ) );
-	var url = parsed.domain;
+	var url = window.location.href;
 	chrome.runtime.sendMessage( { url: url, action: "number_of_store_offers" }, async function( response ) {
 		if ( !nullOrundefined( response ) && !isEmpty( response ) ) {
 			if ( response > 0 ) {

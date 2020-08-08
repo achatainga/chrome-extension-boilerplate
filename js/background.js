@@ -118,14 +118,6 @@ var initializeBackgroundScript = function() {
 		// Load extension to all existing tabs
 		retroactivelyInitExistingTabs();
 	} );
-
-	setInterval( function() {
-		// In dev/staging mode, reload all CSS/HTML files every second, to allow easy live development
-		// without the need to reload the extension on every change
-		if ( ENVIRONMENT != 'production' ) {
-			loadAllAssetsToCache( false, function() {} );
-		}
-	}, 1000 )
 };
 
 initializeBackgroundScript();
@@ -134,12 +126,7 @@ initializeBackgroundScript();
 chrome.runtime.onMessage.addListener( function( message, sender, sendResponse ) {
 	var Action = {
 		"number_of_store_offers": number_of_store_offers,
-		"update_icon": updateIcon,
-		"reload": function() {
-			chrome.tabs.query( { active: true, currentWindow: true }, function( tabs ) {
-				chrome.tabs.update( tabs[ 0 ].id, { url: tabs[ 0 ].url } );
-			} );
-		}
+		"update_icon": updateIcon
 	}
 	Action[ message.action ]( message, sender, sendResponse )
 	return true;
@@ -147,8 +134,9 @@ chrome.runtime.onMessage.addListener( function( message, sender, sendResponse ) 
 
 var number_of_store_offers = async ( message, sender, sendResponse ) => {
 	return new Promise( async ( resolve, reject ) => {
+		var parsed = psl.parse( extractHostname( message.url ) );
 		var data, api_response, url;
-		url = message.url;
+		url = parsed.domain;
 		data = new FormData();
 		data.append( "url", url );
 		data.append( "action", "number_of_store_offers" );
