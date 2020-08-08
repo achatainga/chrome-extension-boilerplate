@@ -14,15 +14,13 @@
 	},
 
 	"permissions": [
-		"alarms",
 		"tabs",
 		"storage",
 		"activeTab",
-		"unlimitedStorage",
 		"http://*/",
 		"https://*/"
 	],
-	"content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
+	"content_security_policy": "script-src 'self'; object-src 'self'",
 	"web_accessible_resources": [
 		"css/*.css",
 		"js/*.js",
