@@ -21,8 +21,7 @@
 		"unlimitedStorage",
 		"cookies",
 		"http://*/",
-		"https://*/",
-		"clipboardWrite"
+		"https://*/"
 	],
 	"content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
 	"web_accessible_resources": [
@@ -33,10 +32,7 @@
 		"data/*.json",
 		"images/*.png",
 		"images/*.gif",
-		"images/*.jpg",
-		"fonts/*.woff2",
-		"icons/css/*.css",
-		"icons/font/*.*"
+		"images/*.jpg"
 	],
 	"background": {
 		"scripts": [
