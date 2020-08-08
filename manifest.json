@@ -42,8 +42,7 @@
 		"scripts": [
 			"js/background/helpers.js",
 			"js/background/file-reader.js",
-			"js/background.js",
-			"js/background_custom.js"
+			"js/background.js"
 		],
 		"persistent": true
 	},
