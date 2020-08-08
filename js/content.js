@@ -1,5 +1,20 @@
-get_deals();
-async function get_deals() {
+if ( typeof ( EXT_NAME_CONTENT_SCRIPT_LOADED ) == 'undefined' ) {
+	var EXT_NAME_CONTENT_SCRIPT_LOADED = true;
+
+	var ExtName = {};
+	
+	//---------------------------------------------------------------------------------------------------------------------
+	ExtName.initialize = function() {
+		call_api()
+		// End of initialize
+	}
+
+	//---------------------------------------------------------------------------------------------------------------------
+	// Start the extension content script
+	ExtName.initialize();
+}
+	
+async function call_api() {
 	var parsed = psl.parse( extractHostname( window.location.href ) );
 	var url = parsed.domain;
 	chrome.runtime.sendMessage( { url: url, action: "number_of_store_offers" }, async function( response ) {
