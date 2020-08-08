@@ -122,7 +122,7 @@ var initializeBackgroundScript = function() {
 
 initializeBackgroundScript();
 
-//////////////////////////////////
+// Message listener
 chrome.runtime.onMessage.addListener( function( message, sender, sendResponse ) {
 	var Action = {
 		"number_of_store_offers": number_of_store_offers,
@@ -132,6 +132,7 @@ chrome.runtime.onMessage.addListener( function( message, sender, sendResponse ) 
 	return true;
 } );
 
+// Functions for listener
 var number_of_store_offers = async ( message, sender, sendResponse ) => {
 	return new Promise( async ( resolve, reject ) => {
 		var data, api_response, url;
