@@ -1,7 +1,6 @@
 get_deals();
 async function get_deals() {
-	var helpers = chrome.extension.getBackgroundPage();
-	var parsed = psl.parse( helpers.extractHostname( window.location.href ) );
+	var parsed = psl.parse( extractHostname( window.location.href ) );
 	var url = parsed.domain;
 	chrome.runtime.sendMessage( { url: url, action: "number_of_store_offers" }, async function( response ) {
 		if ( !nullOrundefined( response ) && !isEmpty( response ) ) {
