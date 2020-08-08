@@ -2,7 +2,7 @@
 // Page Initialization (initialized for all supported sites upon load)
 //----------------------------------------------------------------------------------------------------------------------------------------------------
 
-var SCRIPTS_TO_LOAD = [ "libs/jquery-3.1.1.min.js", "js/content.js", "js/background/helpers.js" ];
+var SCRIPTS_TO_LOAD = [ "libs/jquery-3.1.1.min.js", "js/content.js", "js/background/helpers.js", "js/psl.min.js" ];
 
 // Load the specified file and replace all placeholders before injecting it to the client side
 var getCodeForInjection = function( filename, replacements ) {
