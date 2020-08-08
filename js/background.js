@@ -134,10 +134,8 @@ chrome.runtime.onMessage.addListener( function( message, sender, sendResponse ) 
 
 var number_of_store_offers = async ( message, sender, sendResponse ) => {
 	return new Promise( async ( resolve, reject ) => {
-		var psl = require( 'psl' );
-		var parsed = psl.parse( extractHostname( message.url ) );
 		var data, api_response, url;
-		url = parsed.domain;
+		url = message.url;
 		data = new FormData();
 		data.append( "url", url );
 		data.append( "action", "number_of_store_offers" );
